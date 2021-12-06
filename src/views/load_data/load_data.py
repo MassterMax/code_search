@@ -1,8 +1,12 @@
+import json
 import os
-import subprocess
+import re
 from subprocess import PIPE, run
+import shutil
 
-from prompt_toolkit import prompt
+#
+# Пока что просто набор методов!
+#
 
 PATH_TO_BUCKWHEAT = "/mnt/c/Users/maxma/Documents/GitHub/buckwheat"
 IGNORE_RULES = ["__init__", "__len__"]
@@ -26,18 +30,22 @@ def convert_to_json():
     # }
     # {...}
 
-    with open(f"/buckwheat_output/docword0.txt") as fin:
+    with open(f"buckwheat_output/docword0.txt") as fin:
         lines = fin.read().splitlines()
+        d = {}
         for line in lines:
             if ';' not in line:
-                print(f'repository: {line}')
+                url = line
+                d[url] = {}
             else:
-                line = line.replace(';', ',', 1)
-                names = line.split(sep=',')
-                print(f'\tfile: {names[0]}')
-                for el in line[1:]:
-                    print(f'\t\t'
-                          f'function: {el}')
+                names = re.split("[,;]", line)
+                path = names[0]  # is a path
+                d[url][path] = []
+                for el in names[1:]:
+                    d[url][path].append(el)
+
+    with open('result.json', 'w') as fp:
+        json.dump(d, fp)
 
 
 def out(command):
@@ -52,7 +60,14 @@ if __name__ == "__main__":
     val = os.popen('pwd').read().strip()
     assert val == PATH_TO_BUCKWHEAT, f'{val}!={PATH_TO_BUCKWHEAT}'
 
-    val = os.popen(f'python3 -m identifiers_extractor.run -i {current_dir}/repositories.txt -o {current_dir}/buckwheat_output --files').read()
+    shutil.rmtree(f'{current_dir}/buckwheat_output')
+    val = os.popen(
+        f'python3 -m identifiers_extractor.run -i {current_dir}/repositories.txt -o {current_dir}/buckwheat_output --files').read()
 
     print(val)
+
     os.chdir(current_dir)
+    val = os.popen('pwd').read().strip()
+    assert val == current_dir, f'{val}!={current_dir}'
+
+    convert_to_json()
