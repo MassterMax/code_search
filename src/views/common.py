@@ -1,11 +1,13 @@
 def check_request(method, request):
     return True
 
-def make_error(respone, error):
-    if "errors" not in respone:
-        respone["errors"] = (error)
+
+def make_error(response, error):
+    if "errors" not in response:
+        response["errors"] = error
     else:
-        respone["errors"].append(error)
+        response["errors"].append(error)
+
 
 def try_open_file(path):
     try:

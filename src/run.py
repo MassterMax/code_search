@@ -48,10 +48,10 @@ def main():
         if first_error:
             print(first_error)
             continue
-        response = {}
+
         # Костыль, так как я сходу не придумала как вызывать файл по пути views/{method_name}/view.Impl(request, response)
         if method_name == "init":
-            init.Impl(request, response)
+            response = init.impl(request)
             if "errors" in response:
                 print(response["errors"])
             else:
