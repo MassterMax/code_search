@@ -4,7 +4,7 @@ import re
 from subprocess import PIPE, run
 import shutil
 from pathlib import Path
-
+from elasticsearch import Elasticsearch
 #
 # Пока что просто набор методов!
 #
@@ -55,9 +55,13 @@ def convert_to_json():
         json.dump(d, fp)
 
 
-def out(command):
-    result = run(command, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
-    return result.stdout
+def put_to_elastic_search(es: Elasticsearch, index_name: str):
+    with open('result.json') as json_file:
+        data = json.load(json_file)
+        for url in data:
+            for path in data[url]:
+                for name in data[url][path]:
+                    es.index(index=index_name, document={'url': url, 'file': path, 'function_name': name})
 
 
 if __name__ == "__main__":
