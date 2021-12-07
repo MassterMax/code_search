@@ -55,13 +55,19 @@ def convert_to_json():
         json.dump(d, fp)
 
 
-def put_to_elastic_search(es: Elasticsearch, index_name: str):
-    with open('result.json') as json_file:
-        data = json.load(json_file)
-        for url in data:
-            for path in data[url]:
-                for name in data[url][path]:
-                    es.index(index=index_name, document={'url': url, 'file': path, 'function_name': name})
+def put_to_elastic_search(index_name: str):
+    es = Elasticsearch()
+    try:
+        with open('result.json') as json_file:
+            data = json.load(json_file)
+            for url in data:
+                for path in data[url]:
+                    for name in data[url][path]:
+                        es.index(index=index_name, document={'url': url, 'file': path, 'function_name': name})
+    except Exception as e:
+        return {'status': 'error', 'errors': e}
+
+    return {'status': 'ok'}
 
 
 if __name__ == "__main__":

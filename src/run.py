@@ -4,6 +4,7 @@ import args_parser
 import request_rules
 from views.init import view as init
 from views.search import view as search
+from src.views.load_data.load_data import put_to_elastic_search
 
 ERROR_ARGS = "Failed to parser input from: {}"
 
@@ -58,6 +59,8 @@ def main():
             init.impl(request, response)
         elif method_name == "search":
             search.impl(request, response)
+        elif method_name == 'put':
+            response = put_to_elastic_search(request['index_name'])
         if "errors" in response:
             print(response["errors"])
 
