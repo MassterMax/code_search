@@ -6,6 +6,7 @@ from views.init import view as init
 
 ERROR_ARGS = "Failed to parser input from: {}"
 
+
 def main():
     print("Start programe")
     while True:
@@ -22,7 +23,7 @@ def main():
         if method_name not in request_rules.ARGS_CONVERTER:
             print("Failed to recognize {}".format(method_name))
             continue
-        
+
         rules = request_rules.ARGS_CONVERTER[method_name]
         request = {}
         first_error = None
@@ -32,7 +33,7 @@ def main():
             if tocken[0] == '-':
                 if tocken not in rules:
                     first_error = "Failed to recognize {}".format(tocken)
-                    break 
+                    break
                 if not parser.next():
                     parameter_name = rules[tocken]
                     request[parameter_name] = parser.get_token()

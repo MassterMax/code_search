@@ -3,17 +3,17 @@ import os
 import re
 from subprocess import PIPE, run
 import shutil
+from pathlib import Path
 
 #
 # Пока что просто набор методов!
 #
 
-PATH_TO_BUCKWHEAT = "/mnt/c/Users/maxma/Documents/GitHub/buckwheat"
-IGNORE_RULES = ["__init__", "__len__"]
+IGNORE_RULES = {"__init__", "__len__"}
 
 
 def call_buckwheat():
-    os.system(f'python3 -m {PATH_TO_BUCKWHEAT} -i /repositories.txt -o /buckwheat_output --files')
+    os.system(f'python3 -m {path_to_buckwheat} -i /repositories.txt -o /buckwheat_output --files')
 
 
 def convert_to_json():
@@ -42,7 +42,14 @@ def convert_to_json():
                 path = names[0]  # is a path
                 d[url][path] = []
                 for el in names[1:]:
-                    d[url][path].append(el)
+                    if el not in IGNORE_RULES:
+                        d[url][path].append(el)
+
+                if len(d[url][path]) == 0:
+                    del d[url][path]
+
+                if len(d[url]) == 0:
+                    del d[url]
 
     with open('result.json', 'w') as fp:
         json.dump(d, fp)
@@ -55,10 +62,12 @@ def out(command):
 
 if __name__ == "__main__":
     current_dir = os.getcwd()
-    os.chdir(PATH_TO_BUCKWHEAT)
+    path_to_buckwheat = f'{Path(current_dir).parents[1]}/buckwheat'
+
+    os.chdir(path_to_buckwheat)
 
     val = os.popen('pwd').read().strip()
-    assert val == PATH_TO_BUCKWHEAT, f'{val}!={PATH_TO_BUCKWHEAT}'
+    assert val == path_to_buckwheat, f'{val}!={path_to_buckwheat}'
 
     shutil.rmtree(f'{current_dir}/buckwheat_output')
     val = os.popen(

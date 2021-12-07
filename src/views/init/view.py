@@ -28,7 +28,7 @@ def impl(request):
         common.make_error(response, f"Failed to open file {index_schema_path}")
         return
 
-        # Create new empty index.
+    # Create new empty index.
     es = Elasticsearch()
     res = es.indices.create(index=index_name, ignore=400, body=json.loads(schema.read()))
     print(res)
