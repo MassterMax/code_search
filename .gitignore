@@ -1,1 +1,10 @@
 *__pycache__
+
+/src/views/load_data/buckwheat_output/*
+
+
+/src/buckwheat/identifiers_extractor/parsers/build/*
+!src/buckwheat/identifiers_extractor/parsers/build/.gitkeep
+/src/buckwheat/identifiers_extractor/language_recognition/build/*
+!src/buckwheat/identifiers_extractor/language_recognition/build/.gitkeep
+/src/buckwheat/identifiers_extractor/tests/test_results/

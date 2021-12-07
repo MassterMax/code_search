@@ -1,0 +1,15 @@
+{
+  "mappings": {
+    "properties": {
+      "url": {
+        "type": "text"
+      },
+      "file": {
+        "type": "text"
+      },
+      "function_name": {
+        "type": "text"
+      }
+    }
+  }
+}
