@@ -1,5 +1,7 @@
 *__pycache__
 
+.vscode/*
+
 /src/views/load_data/buckwheat_output/*
 
 

@@ -17,7 +17,7 @@ class TerminalArgsParser:
     #   Hello world (str was as "Hello world")
     #   Hello (str was without "")
     #   -p
-    # (In case of success) delete a read part from args_line_, subsequent spaces and store new value in current_tocken_
+    # (In case of success) delete a read part from args_line_, subsequent spaces and store new value in current_token_
     def next(self):
         if not self.args_line_:
             self.current_token_ = None

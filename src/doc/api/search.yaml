@@ -1,0 +1,12 @@
+request:
+  index_name:
+    type: str
+  search_code_request:
+    type: str
+
+response:
+  index_name:
+      type: str
+  template: ""
+  errors:
+    type: list

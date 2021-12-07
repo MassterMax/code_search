@@ -3,15 +3,14 @@ import os
 
 from elasticsearch import Elasticsearch
 
-import src.views.common as common
+import views.common as common
 
 METHOD_NAME = "init"
 
 RESULT_TEMPLATE = "Index {} is created successfully"
 
 
-def impl(request):
-    response = {}
+def impl(request, response):
 
     # Check request is correct.
     if not common.check_request(METHOD_NAME, request):

@@ -3,12 +3,13 @@
 import args_parser
 import request_rules
 from views.init import view as init
+from views.search import view as search
 
 ERROR_ARGS = "Failed to parser input from: {}"
 
 
 def main():
-    print("Start programe")
+    print("Start program")
     while True:
         command = input()
         parser = args_parser.TerminalArgsParser(command)
@@ -17,7 +18,7 @@ def main():
 
         # Handle quite command.
         if parser.get_token() in ["q", "quite", "exit"]:
-            print("End programe")
+            print("End program")
             return
         method_name = parser.get_token()
         if method_name not in request_rules.ARGS_CONVERTER:
@@ -29,34 +30,36 @@ def main():
         first_error = None
         unnamed_args_ind = 0
         while not parser.next():
-            tocken = parser.get_token()
-            if tocken[0] == '-':
-                if tocken not in rules:
-                    first_error = "Failed to recognize {}".format(tocken)
-                    break
+            token = parser.get_token()
+            if token[0] == '-':
+                if token not in rules:
+                    first_error = "Failed to recognize {}".format(token)
+                    break 
                 if not parser.next():
-                    parameter_name = rules[tocken]
+                    parameter_name = rules[token]
                     request[parameter_name] = parser.get_token()
                 else:
-                    first_error = "Failed to get value after {}".format(tocken)
+                    first_error = "Failed to get value after {}".format(token)
                     break
             else:
                 if str(unnamed_args_ind) not in rules:
-                    first_error = "Too many args {}".format(tocken)
+                    first_error = "Too many args {}".format(token)
                     break
                 parameter_name = rules[str(unnamed_args_ind)]
-                request[parameter_name] = tocken
+                request[parameter_name] = token
+                unnamed_args_ind += 1
         if first_error:
             print(first_error)
             continue
 
         # Костыль, так как я сходу не придумала как вызывать файл по пути views/{method_name}/view.Impl(request, response)
+        response = {}
         if method_name == "init":
-            response = init.impl(request)
-            if "errors" in response:
-                print(response["errors"])
-            else:
-                print(response["template"].format(response["index_name"]))
+            init.impl(request, response)
+        elif method_name == "search":
+            search.impl(request, response)
+        if "errors" in response:
+            print(response["errors"])
 
 
 if __name__ == "__main__":
