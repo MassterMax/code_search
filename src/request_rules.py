@@ -7,5 +7,8 @@ ARGS_CONVERTER = {
     "search": {
         "0": "index_name",
         "1": "search_code_request"
+    },
+    "put": {
+        "0": "index_name"
     }
 }
