@@ -2,6 +2,8 @@ def check_request(method, request):
     return True
 
 
+# todo для бэка наверное будем юзать готовый фреймворк джанго\фастапи, так что респонс будет другой
+
 def make_error(response, error):
     if "errors" not in response:
         response["errors"] = error

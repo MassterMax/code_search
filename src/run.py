@@ -15,10 +15,10 @@ def main():
             print(ERROR_ARGS.format(command[:20]))
 
         # Handle quite command.
-        if parser.get_tocken() in ["q", "quite", "exit"]:
+        if parser.get_token() in ["q", "quite", "exit"]:
             print("End programe")
             return
-        method_name = parser.get_tocken()
+        method_name = parser.get_token()
         if method_name not in request_rules.ARGS_CONVERTER:
             print("Failed to recognize {}".format(method_name))
             continue
@@ -28,14 +28,14 @@ def main():
         first_error = None
         unnamed_args_ind = 0
         while not parser.next():
-            tocken = parser.get_tocken()
+            tocken = parser.get_token()
             if tocken[0] == '-':
                 if tocken not in rules:
                     first_error = "Failed to recognize {}".format(tocken)
                     break 
                 if not parser.next():
                     parameter_name = rules[tocken]
-                    request[parameter_name] = parser.get_tocken()
+                    request[parameter_name] = parser.get_token()
                 else:
                     first_error = "Failed to get value after {}".format(tocken)
                     break
