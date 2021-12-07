@@ -9,9 +9,6 @@
       },
       "function_name": {
         "type": "text"
-      },
-      "line": {
-        "type": "int"
       }
     }
   }
