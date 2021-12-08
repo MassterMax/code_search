@@ -1,10 +1,14 @@
 # Запускаем его
+import json
+from pprint import pprint
+
+from elasticsearch import Elasticsearch
 
 import args_parser
 import request_rules
 from views.init import view as init
 from views.search import view as search
-from src.views.load_data.load_data import put_to_elastic_search
+from src.views.load_data.load_data import put_to_elastic_search, delete
 
 ERROR_ARGS = "Failed to parser input from: {}"
 
@@ -54,15 +58,23 @@ def main():
             continue
 
         # Костыль, так как я сходу не придумала как вызывать файл по пути views/{method_name}/view.Impl(request, response)
-        response = {}
-        if method_name == "init":
-            init.impl(request, response)
-        elif method_name == "search":
-            search.impl(request, response)
-        elif method_name == 'put':
-            response = put_to_elastic_search(request['index_name'])
-        if "errors" in response:
-            print(response["errors"])
+        try:
+            response = {}
+            if method_name == "init":
+                init.impl(request, response)
+            elif method_name == "search":
+                search.impl(request, response)
+            elif method_name == 'put':
+                response = put_to_elastic_search(request['index_name'])
+            elif method_name == 'delete':
+                response = delete(request['index_name'])
+            elif method_name == 'any':
+                text = request['any_text']
+                es = Elasticsearch()
+                response = es.search(body=json.load(text))
+            pprint(response)
+        except Exception as e:
+            print(f'ooops!: {e}')
 
 
 if __name__ == "__main__":

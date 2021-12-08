@@ -1,4 +1,5 @@
 import json
+from pprint import pprint
 
 from src.views.search.vs import v1
 
@@ -23,6 +24,7 @@ def impl(request, response):
     # Send search request to elastic
     es = Elasticsearch()
     res = es.search(index=index_name, body=search_request)
-    print(res)
+    ans = [el['_source'] for el in res['hits']['hits']]
+    pprint(ans)
     response["template"] = RESULT_TEMPLATE
     response["index_name"] = index_name
