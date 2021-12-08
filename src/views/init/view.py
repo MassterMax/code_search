@@ -3,7 +3,7 @@ import os
 
 from elasticsearch import Elasticsearch
 
-import views.common as common
+import src.views.common as common
 
 METHOD_NAME = "init"
 
