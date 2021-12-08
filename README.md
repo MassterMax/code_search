@@ -35,3 +35,10 @@ search sample_index cat
 В целом у меня команды init sample_index сработала
 
 Но также здесь должно быть много багов, потому что я понимаю по крайней мере один
+
+
+
+# Для себя (masstermax)
+docker pull docker.elastic.co/elasticsearch/elasticsearch:7.16.0
+sudo dockerd
+sudo docker run -p 127.0.0.1:9200:9200 -p 127.0.0.1:9300:9300 -e "discovery.type=single-node" docker.elastic.co/elasticsearch/elasticsearch:7.16.0

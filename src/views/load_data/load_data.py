@@ -56,9 +56,10 @@ def convert_to_json():
 
 
 def put_to_elastic_search(index_name: str):
+    # print(os.getcwd())
     es = Elasticsearch()
     try:
-        with open('result.json') as json_file:
+        with open(f'{os.getcwd()}/views/load_data/result.json') as json_file:
             data = json.load(json_file)
             for url in data:
                 for path in data[url]:
