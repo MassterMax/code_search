@@ -5,6 +5,7 @@ from subprocess import PIPE, run
 import shutil
 from pathlib import Path
 from elasticsearch import Elasticsearch
+
 #
 # Пока что просто набор методов!
 #
@@ -55,10 +56,21 @@ def convert_to_json():
         json.dump(d, fp)
 
 
-def put_to_elastic_search(index_name: str):
+def delete(index_name: str):
     es = Elasticsearch()
     try:
-        with open('result.json') as json_file:
+        es.indices.delete(index=index_name)
+    except Exception as e:
+        return {'status': 'error', 'errors': e}
+
+    return {'status': 'ok'}
+
+
+def put_to_elastic_search(index_name: str):
+    # print(os.getcwd())
+    es = Elasticsearch()
+    try:
+        with open(f'{os.getcwd()}/views/load_data/result.json') as json_file:
             data = json.load(json_file)
             for url in data:
                 for path in data[url]:

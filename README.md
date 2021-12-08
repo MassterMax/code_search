@@ -35,3 +35,8 @@ search sample_index cat
 В целом у меня команды init sample_index сработала
 
 Но также здесь должно быть много багов, потому что я понимаю по крайней мере один
+
+
+
+# Для себя (masstermax)
+todo - Makefile

@@ -7,11 +7,11 @@ def transform(user_request):
         }
     return {
         "query": {
-            "match": {
-                "function_name": {
-                    "query": user_request,
-                    "fuzziness": 10
-                }
+            "simple_query_string": {
+                "query": user_request,
+                "fields": ["function_name"],
+                "default_operator": "or",
+                "fuzzy_prefix_length": 5
             }
         }
     }
