@@ -1,9 +1,10 @@
 # Запускаем его
 
-import args_parser
-import request_rules
-from views.init import view as init
-from views.search import view as search
+from src import args_parser
+from src import request_rules
+from src.views.init import view as init
+from src.views.delete import view as delete
+from src.views.search import view as search
 from src.views.load_data.load_data import put_to_elastic_search
 
 ERROR_ARGS = "Failed to parser input from: {}"
@@ -53,14 +54,11 @@ def main():
             print(first_error)
             continue
 
-        # Костыль, так как я сходу не придумала как вызывать файл по пути views/{method_name}/view.Impl(request, response)
         response = {}
-        if method_name == "init":
-            init.impl(request, response)
-        elif method_name == "search":
-            search.impl(request, response)
-        elif method_name == 'put':
+        if method_name == 'put':
             response = put_to_elastic_search(request['index_name'])
+        else:
+            eval(method_name + ".impl(request, response)")
         if "errors" in response:
             print(response["errors"])
 

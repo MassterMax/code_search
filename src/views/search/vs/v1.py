@@ -8,7 +8,7 @@ def transform(user_request):
     return {
         "query": {
             "match": {
-                "function_name": {
+                "email": {
                     "query": user_request,
                     "fuzziness": 10
                 }

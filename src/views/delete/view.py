@@ -5,9 +5,9 @@ from elasticsearch import Elasticsearch
 from elasticsearch import exceptions as EcExceptions
 import src.views.common as common
 
-METHOD_NAME = "init"
+METHOD_NAME = "delete"
 
-RESULT_TEMPLATE = "Index {} is created successfully"
+RESULT_TEMPLATE = "Index {} is deleted successfully"
 
 
 def impl(request, response):
@@ -17,20 +17,11 @@ def impl(request, response):
         common.make_error(response, "Wrong request parameter")
         return
 
-    # Look for index schema.
     index_name = request["index_name"]
-    dir_path = os.path.dirname(__file__)
-    index_schema_path = f"{dir_path}/index_schemas/{index_name}.json"
-
-    schema = common.try_open_file(index_schema_path)
-    if schema is None:
-        common.make_error(response, f"Failed to open file {index_schema_path}")
-        return
-
-    # Create new empty index.
+    # Delete index.
     try:
         es = Elasticsearch()
-        res = es.indices.create(index=index_name, ignore=400, body=json.loads(schema.read()))
+        res = es.indices.delete(index=index_name, ignore=[400, 404])
         print(res)
         response["template"] = RESULT_TEMPLATE
         response["index_name"] = index_name
