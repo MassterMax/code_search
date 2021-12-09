@@ -1,16 +1,16 @@
 import json
 import os
 
-from elasticsearch import Elasticsearch
+import elasticsearch
 
-import src.views.common as common
+import views.common as common
 
 METHOD_NAME = "init"
 
 RESULT_TEMPLATE = "Index {} is created successfully"
 
 
-def impl(request, response):
+def impl(request, response, es):
 
     # Check request is correct.
     if not common.check_request(METHOD_NAME, request):
@@ -28,10 +28,11 @@ def impl(request, response):
         return
 
     # Create new empty index.
-    es = Elasticsearch()
-    res = es.indices.create(index=index_name, ignore=400, body=json.loads(schema.read()))
-    print(res)
-    response["template"] = RESULT_TEMPLATE
-    response["index_name"] = index_name
-
+    res = None
+    try:
+        res = es.indices.create(index=index_name, body=json.loads(schema.read()))
+    except elasticsearch.exceptions.RequestError as error:
+        print(error.info["error"]["reason"])
+    else:
+        print(res)
     return response

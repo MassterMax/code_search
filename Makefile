@@ -1,6 +1,3 @@
-hello_world:
-	@echo "Hello world!!"
-
 # todo - add make testenv with elastic docker
 
 dockerd:
@@ -13,3 +10,9 @@ dockerd:
 #killall:
 #	kill -9 -1
 #	wsl --shutdown
+
+generate_docs:
+	cd src/views/load_data && python3 load_data.py && cd ../../../
+
+local:
+	cd src && python3 run.py && cd ..

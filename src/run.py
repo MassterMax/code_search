@@ -1,19 +1,27 @@
-# Запускаем его
 import json
 from pprint import pprint
+from shutil import Error
 
 from elasticsearch import Elasticsearch
+import elasticsearch
 
 import args_parser
 import request_rules
 from views.init import view as init
 from views.search import view as search
-from src.views.load_data.load_data import put_to_elastic_search, delete
-
+from views.load_data.load_data import put_to_elastic_search, delete
 ERROR_ARGS = "Failed to parser input from: {}"
 
 
 def main():
+    es = None
+    try:
+        es = Elasticsearch()
+    except (elasticsearch.exceptions.ConnectionError, elasticsearch.exceptions.ConnectionTimeout) as error:
+        print("Failed to connect es:", error)
+        return
+    last_method = None
+    last_index = None
     print("Start program")
     while True:
         command = input()
@@ -25,16 +33,24 @@ def main():
         if parser.get_token() in ["q", "quite", "exit"]:
             print("End program")
             return
-        method_name = parser.get_token()
-        if method_name not in request_rules.ARGS_CONVERTER:
-            print("Failed to recognize {}".format(method_name))
-            continue
+        request = {}
+        unnamed_args_ind = 0
+        if parser.get_token() in [None, "r"]:
+            if last_method is None:
+                print("Failed to get previous command")
+                continue
+            method_name = last_method
+            request["index_name"] = last_index
+            unnamed_args_ind += 1
+        else:
+            method_name = parser.get_token()
+            if method_name not in request_rules.ARGS_CONVERTER:
+                print("Failed to recognize {}".format(method_name))
+                continue
 
         rules = request_rules.ARGS_CONVERTER[method_name]
-        request = {}
         first_error = None
-        unnamed_args_ind = 0
-        while not parser.next():
+        while not parser.next() and not parser.is_end():            
             token = parser.get_token()
             if token[0] == '-':
                 if token not in rules:
@@ -57,24 +73,22 @@ def main():
             print(first_error)
             continue
 
-        # Костыль, так как я сходу не придумала как вызывать файл по пути views/{method_name}/view.Impl(request, response)
         try:
             response = {}
-            if method_name == "init":
-                init.impl(request, response)
-            elif method_name == "search":
-                search.impl(request, response)
-            elif method_name == 'put':
-                response = put_to_elastic_search(request['index_name'])
+            if method_name == 'put':
+                response = put_to_elastic_search(request['index_name'], es)
             elif method_name == 'delete':
-                response = delete(request['index_name'])
+                response = delete(request['index_name'], es)
             elif method_name == 'any':
                 text = request['any_text']
-                es = Elasticsearch()
                 response = es.search(body=json.load(text))
+            else:
+                eval(method_name + ".impl(request, response, es)")
             pprint(response)
+            last_method = method_name
+            last_index = request["index_name"]
         except Exception as e:
-            print(f'ooops!: {e}')
+           print(f'ooops!: {e}')
 
 
 if __name__ == "__main__":

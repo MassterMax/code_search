@@ -56,8 +56,7 @@ def convert_to_json():
         json.dump(d, fp)
 
 
-def delete(index_name: str):
-    es = Elasticsearch()
+def delete(index_name: str, es):
     try:
         es.indices.delete(index=index_name)
     except Exception as e:
@@ -66,9 +65,8 @@ def delete(index_name: str):
     return {'status': 'ok'}
 
 
-def put_to_elastic_search(index_name: str):
+def put_to_elastic_search(index_name: str, es):
     # print(os.getcwd())
-    es = Elasticsearch()
     try:
         with open(f'{os.getcwd()}/views/load_data/result.json') as json_file:
             data = json.load(json_file)
@@ -84,6 +82,7 @@ def put_to_elastic_search(index_name: str):
 
 if __name__ == "__main__":
     current_dir = os.getcwd()
+    print(current_dir)
     path_to_buckwheat = f'{Path(current_dir).parents[1]}/buckwheat'
 
     os.chdir(path_to_buckwheat)
