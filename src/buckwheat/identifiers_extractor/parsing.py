@@ -386,6 +386,7 @@ def tokenize_repositories(repositories_file: str, output_dir: str,
                             # print(tokens)
                             # print(file2tokens[file])
                             my_tokens = my_transform_tokens(file2tokens[file], token2number)
+                            my_tokens = [x for x in my_tokens if x in rep2tokens[repository]]
                             if len(my_tokens) == 0:
                                 continue
                             # print(my_tokens)
