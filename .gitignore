@@ -2,11 +2,11 @@
 
 .vscode/*
 
-/src/views/load_data/buckwheat_output/*
+codesearch/preproc/buckwheat_output/*
+!codesearch/preproc/buckwheat_output/.gitkeep
 
-
-/src/buckwheat/identifiers_extractor/parsers/build/*
-!src/buckwheat/identifiers_extractor/parsers/build/.gitkeep
-/src/buckwheat/identifiers_extractor/language_recognition/build/*
-!src/buckwheat/identifiers_extractor/language_recognition/build/.gitkeep
-/src/buckwheat/identifiers_extractor/tests/test_results/
+*/buckwheat/identifiers_extractor/parsers/build/*
+!*/buckwheat/identifiers_extractor/parsers/build/.gitkeep
+*/buckwheat/identifiers_extractor/language_recognition/build/*
+!*/buckwheat/identifiers_extractor/language_recognition/build/.gitkeep
+*/buckwheat/identifiers_extractor/tests/test_results/
