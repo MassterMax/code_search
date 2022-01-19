@@ -1,0 +1,38 @@
+{
+  "settings": {
+    "analysis": {
+      "filter": {
+        "simple_stemmer": {
+          "type": "stemmer",
+          "language": "english"
+        }
+      },
+      "analyzer": {
+        "simple_analyzer": {
+          "type": "custom",
+          "stopwords": "_english_",
+          "filter": [
+            "lowercase",
+            "simple_stemmer"
+          ],
+          "tokenizer": "letter"
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "url": {
+        "type": "text"
+      },
+      "file": {
+        "type": "text"
+      },
+      "function_name": {
+        "type": "text",
+        "analyzer": "simple_analyzer",
+        "search_analyzer": "simple_analyzer"
+      }
+    }
+  }
+}
