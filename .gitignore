@@ -1,6 +1,12 @@
 *__pycache__
 
 .vscode/*
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries
+.idea/vcs.xml
+.idea/jsLibraryMappings.xml
+*.iws
 
 codesearch/preproc/buckwheat_output/*
 !codesearch/preproc/buckwheat_output/.gitkeep

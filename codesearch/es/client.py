@@ -1,7 +1,7 @@
 import json
 import os
 from elasticsearch import Elasticsearch
-from vs import v1
+from codesearch.es.vs import v1
 
 
 class ElasticSearchClient:
