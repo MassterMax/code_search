@@ -32,3 +32,20 @@ cs search index_name "code searching"
 ```
 cs delete index_name
 ```
+
+[masstermax]
+
+Установка preprocess - пока что так:
+```
+pip install git+https://github.com/HSE-JetBrains-department/preprocess@master
+```
+
+Для использования в питоне:
+```
+sudo chmod -R ugo+rX /home/masstermax/.local/lib/python3.8/site-packages/
+```
+
+Также для работы нужен go:
+```
+sudo apt install golang
+```
