@@ -15,7 +15,7 @@ def cs():
 @cs.command()
 @click.argument("index_name")
 def init(index_name: str):
-    print(ES.init(index_name))
+    print(ES.create(index_name))
 
 
 @cs.command()
