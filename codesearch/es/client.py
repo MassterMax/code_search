@@ -3,7 +3,8 @@ import os
 from elasticsearch import Elasticsearch
 from codesearch.es.vs import v1
 
-class ESConnector:
+
+class ElasticSearchClient:
     def __init__(self):
         self.es = Elasticsearch()
 
@@ -28,7 +29,7 @@ class ESConnector:
                     for path in data[url]:
                         for name in data[url][path]:
                             self.es.index(index=index_name, document=
-                                          {'url': url, 'file': path, 'function_name': name})
+                            {'url': url, 'file': path, 'function_name': name})
         except Exception as e:
             return {'status': 'error', 'errors': e}
 
@@ -48,6 +49,7 @@ class ESConnector:
             return {'status': 'error', 'errors': e}
 
         return {'status': 'ok'}
+
 
 if __name__ == '__main__':
     pass
