@@ -9,7 +9,7 @@ from cytoolz import groupby
 # from preprocess.mappers.files import extract_class_trees
 from preprocess.extractors.tree_sitter import TreeEntity
 from preprocess.mappers.files import extract_function_trees
-from preprocess.sources import GitSource
+from preprocess.sources import GitSource, FolderSource
 # To extract class identifiers simply use another prebuilt extractor
 # from preprocess.mappers.files import extract_class_identifiers_from_file
 from preprocess.utils import ProgrammingLanguages
@@ -57,6 +57,7 @@ def extract_data(repositories_path: str, output_directory: str, git_location: bo
     all_functions = {'extracted': []}
 
     function_trees_identifiers = (
+        # FolderSource(repositories_path)
         GitSource(repositories_path)
             # Construct files sequence
             .files_chain
@@ -123,4 +124,5 @@ def extract_data(repositories_path: str, output_directory: str, git_location: bo
 if __name__ == '__main__':
     directory = os.getcwd()
     path = f"{directory}/repositories.txt"
-    extract_data(path, directory)
+    # path = "/mnt/c/Users/maxma/Documents/tmp"
+    extract_data(path, directory, False)
