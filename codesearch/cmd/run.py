@@ -1,7 +1,10 @@
 import sys
 import click
-sys.path.insert(0, './codesearch/es/')
-from es_connector import ESConnector
+
+sys.path.insert(0, './')
+
+from codesearch.es.es_connector import ESConnector
+from codesearch.preproc.extract import extract_data
 
 
 @click.group()
@@ -28,6 +31,13 @@ def put(index_name: str):
 @click.argument("search_request")
 def search(index_name: str, search_request: str):
     print(es_obj.search(index_name, search_request))
+
+@cs.command()
+@click.argument("repositories_path")
+@click.argument("output_directory")
+@click.argument("git_location")
+def extract(repositories_path: str, output_directory: str, git_location: bool = True):
+    extract_data(repositories_path, output_directory, git_location)
 
 if __name__ == '__main__':
     es_obj = ESConnector()
