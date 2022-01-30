@@ -1,0 +1,50 @@
+{
+  "settings": {
+    "analysis": {
+      "filter": {
+        "simple_stemmer": {
+          "type": "stemmer",
+          "language": "english"
+        }
+      },
+      "analyzer": {
+        "simple_analyzer": {
+          "type": "custom",
+          "stopwords": "_english_",
+          "filter": [
+            "lowercase",
+            "simple_stemmer"
+          ],
+          "tokenizer": "letter"
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "start_line": {
+        "type": "integer"
+      },
+      "location": {
+        "type": "text"
+      },
+      "language": {
+        "type": "text"
+      },
+      "identifiers": {
+        "type": "text"
+      },
+      "function_name": {
+        "type": "text",
+        "analyzer": "simple_analyzer",
+        "search_analyzer": "simple_analyzer"
+      },
+      "parameters": {
+        "type": "text"
+      },
+      "docstring": {
+        "type": "text"
+      }
+    }
+  }
+}
