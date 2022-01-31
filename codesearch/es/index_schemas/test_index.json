@@ -1,0 +1,13 @@
+{
+  "mappings": {
+      "integer1": {
+        "type": "integer"
+      },
+      "text1": {
+        "type": "text"
+      },
+      "text2": {
+        "type": "text"
+      }
+    }
+}

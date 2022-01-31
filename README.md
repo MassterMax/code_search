@@ -33,7 +33,7 @@ cs search index_name "code searching"
 cs delete index_name
 ```
 
-[masstermax]
+## masstermax
 
 Установка preprocess - пока что так:
 ```
@@ -49,3 +49,8 @@ sudo chmod -R ugo+rX /home/masstermax/.local/lib/python3.8/site-packages/
 ```
 sudo apt install golang
 ```
+
+### elasticsearch tests
+Для работы с тестами я прописал в Makefile команды для запуска эластика, а также подключил 
+unittest - это всё для локальных тестов и чтобы поиграть с эластиком, посмотреть, какие
+маппинги и запросы можно делать

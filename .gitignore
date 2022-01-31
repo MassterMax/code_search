@@ -16,3 +16,4 @@ codesearch/preproc/buckwheat_output/*
 */buckwheat/identifiers_extractor/language_recognition/build/*
 !*/buckwheat/identifiers_extractor/language_recognition/build/.gitkeep
 codesearch/preproc/result.json
+/tests/es/_trial_temp/
