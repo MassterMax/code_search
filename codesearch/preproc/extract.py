@@ -73,9 +73,9 @@ def extract_from_csv(_csv_path: str, _storage_path: str, _output_directory: str,
                     json.dump(data_to_write, fp)
                 cnt += 1
                 data_to_write = []
-            print('success!')
+            print(f'{url} processed successfully!')
         except Exception as e:
-            print(f"exception occurred: {e}")
+            print(f"{url}: exception occurred - {e}")
             exceptions += 1
 
         shutil.rmtree(repo_path, True)

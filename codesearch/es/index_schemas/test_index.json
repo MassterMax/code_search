@@ -1,5 +1,6 @@
 {
   "mappings": {
+    "properties": {
       "integer1": {
         "type": "integer"
       },
@@ -10,4 +11,5 @@
         "type": "text"
       }
     }
+  }
 }

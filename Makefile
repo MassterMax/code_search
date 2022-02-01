@@ -14,4 +14,4 @@ test_env_stop:
 	sudo docker stop elasticsearch
 
 test_env_resume:
-	sudo docker srart elasticsearch
+	sudo docker start elasticsearch

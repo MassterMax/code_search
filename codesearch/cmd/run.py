@@ -1,7 +1,4 @@
-import sys
 import click
-
-sys.path.insert(0, './')
 
 from codesearch.es.client import ElasticSearchClient
 from codesearch.preproc.extract import extract_data
