@@ -1,18 +1,18 @@
 import json
 import os
+import shutil
 import time
-from pprint import pprint
-from typing import Iterator, Tuple, Dict, Type
+from pathlib import Path
+from typing import Iterator, Tuple, Dict, Type, List
 
+import pandas as pd
 from cytoolz import groupby
-# To extract class identifiers simply use another prebuilt extractor
-# from preprocess.mappers.files import extract_class_trees
+from git import Repo
 from preprocess.extractors.tree_sitter import TreeEntity
 from preprocess.mappers.files import extract_function_trees
 from preprocess.sources import GitSource, FolderSource
-# To extract class identifiers simply use another prebuilt extractor
-# from preprocess.mappers.files import extract_class_identifiers_from_file
 from preprocess.utils import ProgrammingLanguages
+from tqdm import tqdm
 
 from codesearch.preproc.languages import CppRules, PythonRules, LanguageRules
 
@@ -20,7 +20,65 @@ from codesearch.preproc.languages import CppRules, PythonRules, LanguageRules
 LANGUAGES: Dict[str, Type[LanguageRules]] = {PythonRules.name: PythonRules, CppRules.name: CppRules}
 
 
-def extract_data(repositories_path: str, output_directory: str, git_location: bool = True):
+def extract_from_csv(_csv_path: str, _storage_path: str, _output_directory: str):
+    """
+    A function to extract data from git repo with provided csv
+    Args:
+        _csv_path: path to csv file
+        _storage_path: a directory where tmp folder with repos will be created
+        _output_directory: a directory where .json file will be stored
+
+    Returns:
+
+    """
+
+    t = time.time()
+    exceptions = 0
+
+    df = pd.read_csv(_csv_path, header=[0])
+    temp_path = f'{_storage_path}/tmp'
+    Path(temp_path).mkdir()  # there will be exception if already exists
+
+    skip = 9995
+    for index, row in tqdm(df.iterrows()):
+        skip -= 1
+        if skip > 0:
+            continue
+
+        try:
+            owner = row['owner']
+            name = row['name']
+            url = f'https://github.com/{owner}/{name}'
+            repo_path = f'{temp_path}/{owner}_{name}'
+
+            print(f"processing: {url}")
+            repo = Repo.clone_from(url, repo_path)
+
+            data = extract_data(temp_path)
+            for el in data:
+                el['location'] = f'{url}/blob/{repo.commit()}/{el["location"]}'
+                el['stargazers_count'] = row['stargazers_count']
+                el['repo_id'] = row['repo_id']
+
+            # data[DATA_KEY].append(extract_data(path)[DATA_KEY])
+            with open(f'{_output_directory}/{owner}_{name}.json', 'w') as fp:
+                json.dump(data, fp)
+
+            shutil.rmtree(repo_path)
+            print('success!\n')
+
+        except Exception as e:
+            print(f"exception occurred: {e}")
+            exceptions += 1
+
+    try:
+        shutil.rmtree(temp_path)
+    except:
+        pass
+    print(f"the whole process took {time.time() - t} seconds with {exceptions} exceptions")
+
+
+def extract_data(repositories_path: str, from_git: bool = False) -> List[Dict]:
     def traverse_tree(entity: TreeEntity, _level: int = 0) -> Iterator[Tuple[int, TreeEntity]]:
         """Yield tree structure with depth level"""
         yield _level, entity
@@ -54,11 +112,12 @@ def extract_data(repositories_path: str, output_directory: str, git_location: bo
                 arr.append(get_str(i))
         return arr
 
-    all_functions = {'extracted': []}
+    all_functions = []
+
+    source = GitSource(repositories_path) if from_git else FolderSource(repositories_path)
 
     function_trees_identifiers = (
-        # FolderSource(repositories_path)
-        GitSource(repositories_path)
+        source
             # Construct files sequence
             .files_chain
             # Extract function trees
@@ -67,22 +126,17 @@ def extract_data(repositories_path: str, output_directory: str, git_location: bo
             .elements()
     )
 
-    # Do further processing with function trees
-    # For example: output types of entities grouped by depth
     for tree_identifier in function_trees_identifiers:
         code_file = tree_identifier.file
         lang: ProgrammingLanguages = tree_identifier.file.language
         data = {'start_line': tree_identifier.start_line,
-                'location': f'{tree_identifier.file.repo}/{tree_identifier.file.file}',
+                'location': f'{tree_identifier.file.file}',
                 'language': lang.value,
                 'identifiers': []}
 
-        if git_location:
-            repo = tree_identifier.file.repo.replace('-', '/', 1)
-            file = tree_identifier.file.file
-            data['location'] = f'https://github.com/{repo}/blob/main/{file}'
-
-        assert lang.value in LANGUAGES, f"language not supported: {lang.value}"
+        if lang.value not in LANGUAGES:
+            print(f"language is not supported yet: {lang.value} for file {data['location']}")
+            continue
 
         # Group nodes by level for nice output
         tree_nodes_by_depth = groupby(lambda i: i[0], traverse_tree(tree_identifier))
@@ -106,23 +160,18 @@ def extract_data(repositories_path: str, output_directory: str, git_location: bo
                 docstring: str = get_docstring(identifiers)
                 # maybe another solution?
                 if docstring:
-                    docstring = docstring.replace("  ", "")
-                    docstring = docstring.replace("\n", " ")
-                    docstring = docstring.replace("\r", "")
-                    docstring = docstring.replace('"', '')
-                    docstring = docstring.replace("  ", " ")
-                    docstring = docstring.replace("  ", " ")
-                    docstring = docstring.strip()
+                    docstring = " ".join(docstring.split())
+                    docstring = docstring.replace('\"', '')
                 data['docstring'] = docstring
 
-        all_functions['extracted'].append(data)
+        all_functions.append(data)
 
-    with open(f'{output_directory}/result.json', 'w') as fp:
-        json.dump(all_functions, fp)
+    return all_functions
 
 
 if __name__ == '__main__':
     directory = os.getcwd()
-    path = f"{directory}/repositories.txt"
-    # path = "/mnt/c/Users/maxma/Documents/tmp"
-    extract_data(path, directory, False)
+    csv_path = f"{directory}/repositories.csv"
+    storage_path = "/mnt/c/Users/maxma/Documents"
+
+    extract_from_csv(csv_path, storage_path, directory)

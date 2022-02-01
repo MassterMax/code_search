@@ -26,7 +26,7 @@ class ElasticSearchClient:
         try:
             with open(f'{os.getcwd()}/codesearch/preproc/result.json', encoding='utf-8') as json_file:
                 data = json.load(json_file)
-                for entity in data['extracted']:
+                for entity in data['extracted']:  # todo change to just in data
                     self.instance.index(index=index_name, document={
                       'start_line': entity['start_line'],
                       'location': entity['location'],
@@ -36,11 +36,6 @@ class ElasticSearchClient:
                       'parameters': entity['parameters'],
                       'docstring': entity['docstring']
                     })
-                # for url in data:
-                #     for path in data[url]:
-                #         for name in data[url][path]:
-                #             self.instance.index(index=index_name, document=
-                #             {'url': url, 'file': path, 'function_name': name})
         except Exception as e:
             return {'status': 'error', 'errors': e}
 
