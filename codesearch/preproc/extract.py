@@ -12,7 +12,6 @@ from preprocess.extractors.tree_sitter import TreeEntity
 from preprocess.mappers.files import extract_function_trees
 from preprocess.sources import GitSource, FolderSource
 from preprocess.utils import ProgrammingLanguages
-from tqdm import tqdm
 
 from codesearch.preproc.languages import CppRules, PythonRules, LanguageRules
 
@@ -20,39 +19,44 @@ from codesearch.preproc.languages import CppRules, PythonRules, LanguageRules
 LANGUAGES: Dict[str, Type[LanguageRules]] = {PythonRules.name: PythonRules, CppRules.name: CppRules}
 
 
-def extract_from_csv(_csv_path: str, _storage_path: str, _output_directory: str):
+def extract_from_csv(_csv_path: str, _storage_path: str, _output_directory: str, _one_file_size: int = 2 * 1024):
     """
     A function to extract data from git repo with provided csv
     Args:
         _csv_path: path to csv file
         _storage_path: a directory where tmp folder with repos will be created
         _output_directory: a directory where .json file will be stored
+        _one_file_size: maximum size of one produced .json file in megabytes
 
     Returns:
 
     """
 
     t = time.time()
+    total_size = 0
     exceptions = 0
+    cnt = 0
+    data_to_write = []
 
     df = pd.read_csv(_csv_path, header=[0])
     temp_path = f'{_storage_path}/tmp'
-    Path(temp_path).mkdir()  # there will be exception if already exists
+    Path(temp_path).mkdir()  # there will be an exception if folder already exists
 
-    skip = 9995
-    for index, row in tqdm(df.iterrows()):
+    skip = 9980
+    for index, row in df.iterrows():
         skip -= 1
         if skip > 0:
             continue
 
-        try:
-            owner = row['owner']
-            name = row['name']
-            url = f'https://github.com/{owner}/{name}'
-            repo_path = f'{temp_path}/{owner}_{name}'
+        owner = row['owner']
+        name = row['name']
+        url = f'https://github.com/{owner}/{name}'
+        repo_path = f'{temp_path}/{owner}_{name}'
+        print(f"processing: {url}")
 
-            print(f"processing: {url}")
+        try:
             repo = Repo.clone_from(url, repo_path)
+            total_size += os.path.getsize(repo_path)
 
             data = extract_data(temp_path)
             for el in data:
@@ -60,22 +64,24 @@ def extract_from_csv(_csv_path: str, _storage_path: str, _output_directory: str)
                 el['stargazers_count'] = row['stargazers_count']
                 el['repo_id'] = row['repo_id']
 
-            # data[DATA_KEY].append(extract_data(path)[DATA_KEY])
-            with open(f'{_output_directory}/{owner}_{name}.json', 'w') as fp:
-                json.dump(data, fp)
-
-            shutil.rmtree(repo_path)
-            print('success!\n')
-
+            data_to_write.extend(data)
+            current_dict_size = len(json.dumps(data_to_write))
+            if current_dict_size > _one_file_size * 1024 * 1024 or df.shape[0] - 1 == index:
+                # data[DATA_KEY].append(extract_data(path)[DATA_KEY])
+                with open(f'{_output_directory}/{cnt}.json', 'w') as fp:
+                    json.dump(data_to_write, fp)
+                cnt += 1
+                data_to_write = []
+            print('success!')
         except Exception as e:
             print(f"exception occurred: {e}")
             exceptions += 1
 
-    try:
-        shutil.rmtree(temp_path)
-    except:
-        pass
-    print(f"the whole process took {time.time() - t} seconds with {exceptions} exceptions")
+        shutil.rmtree(repo_path, True)
+
+    shutil.rmtree(temp_path, True)
+    print(f"the whole process took {time.time() - t} seconds with {exceptions} exception(s)")
+    print(f"download totally {total_size}b which is {total_size / 1024 / 1024}mb")
 
 
 def extract_data(repositories_path: str, from_git: bool = False) -> List[Dict]:
@@ -174,4 +180,4 @@ if __name__ == '__main__':
     csv_path = f"{directory}/repositories.csv"
     storage_path = "/mnt/c/Users/maxma/Documents"
 
-    extract_from_csv(csv_path, storage_path, directory)
+    extract_from_csv(csv_path, storage_path, directory, 1)
