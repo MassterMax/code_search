@@ -43,12 +43,7 @@ def extract_from_csv(_csv_path: str, _storage_path: str, _output_directory: str,
     temp_path = f'{_storage_path}/tmp'
     Path(temp_path).mkdir()  # there will be an exception if folder already exists
 
-    skip = 9980
     for index, row in df.iterrows():
-        skip -= 1
-        if skip > 0:
-            continue
-
         owner = row['owner']
         name = row['name']
         url = f'https://github.com/{owner}/{name}'
