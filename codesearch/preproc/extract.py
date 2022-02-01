@@ -4,7 +4,7 @@ import shutil
 import time
 from pathlib import Path
 from typing import Iterator, Tuple, Dict, Type, List
-
+import datetime
 import pandas as pd
 from cytoolz import groupby
 from git import Repo
@@ -33,6 +33,7 @@ def extract_from_csv(_csv_path: str, _storage_path: str, _output_directory: str,
     """
 
     t = time.time()
+    start_datetime = datetime.datetime.now()
     total_size = 0
     exceptions = 0
     cnt = 0
@@ -80,6 +81,7 @@ def extract_from_csv(_csv_path: str, _storage_path: str, _output_directory: str,
         shutil.rmtree(repo_path, True)
 
     shutil.rmtree(temp_path, True)
+    print(f"started at: {start_datetime}, current time: {datetime.datetime.now()}")
     print(f"the whole process took {time.time() - t} seconds with {exceptions} exception(s)")
     print(f"download totally {total_size}b which is {total_size / 1024 / 1024}mb")
 
