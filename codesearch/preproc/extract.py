@@ -139,14 +139,14 @@ def extract_data(repositories_path: str, from_git: bool = False) -> List[Dict]:
                 'identifiers': []}
 
         if lang.value not in LANGUAGES:
-            print(f"language is not supported yet: {lang.value} for file {data['location']}")
+            # print(f"language is not supported yet: {lang.value} for file {data['location']}")  # todo for debug
             continue
 
         # Group nodes by level for nice output
         tree_nodes_by_depth = groupby(lambda i: i[0], traverse_tree(tree_identifier))
 
         for level, identifiers in sorted(tree_nodes_by_depth.items()):
-            # print(f"L{level}: {'; '.join([i[1].type + ' ' + get_str(i) for i in identifiers])}")  # todo debug string
+            # print(f"L{level}: {'; '.join([i[1].type + ' ' + get_str(i) for i in identifiers])}")  # todo for debug
 
             # get all identifiers
             data['identifiers'].extend(get_identifiers(identifiers))
