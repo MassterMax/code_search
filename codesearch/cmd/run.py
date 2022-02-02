@@ -1,7 +1,7 @@
 import click
 
 from codesearch.es.client import ElasticSearchClient
-from codesearch.preproc.extract import extract_data
+from codesearch.preproc.extract import extract_from_csv
 
 
 @click.group()
@@ -35,11 +35,12 @@ def search(index_name: str, search_request: str):
 
 
 @cs.command()
-@click.argument("repositories_path")
-@click.argument("output_directory")
-@click.argument("git_location")
-def extract(repositories_path: str, output_directory: str, git_location: bool = True):
-    extract_data(repositories_path, output_directory, git_location)
+@click.argument("csv_path")
+@click.argument("storage_path")
+@click.argument("output_path")
+@click.argument("file_size_mb")
+def extract(csv_path: str, storage_path: str, output_path: str, file_size_mb: int = 1024):
+    extract_from_csv(csv_path, storage_path, output_path, file_size_mb)
 
 
 if __name__ == '__main__':

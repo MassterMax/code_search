@@ -19,7 +19,7 @@ from codesearch.preproc.languages import CppRules, PythonRules, LanguageRules
 LANGUAGES: Dict[str, Type[LanguageRules]] = {PythonRules.name: PythonRules, CppRules.name: CppRules}
 
 
-def extract_from_csv(_csv_path: str, _storage_path: str, _output_directory: str, _one_file_size: int = 2 * 1024):
+def extract_from_csv(_csv_path: str, _storage_path: str, _output_directory: str, _one_file_size: int = 1024):
     """
     A function to extract data from git repo with provided csv
     Args:
@@ -37,6 +37,7 @@ def extract_from_csv(_csv_path: str, _storage_path: str, _output_directory: str,
     total_size = 0
     exceptions = 0
     cnt = 0
+    _one_file_size = int(_one_file_size)
     data_to_write = []
 
     df = pd.read_csv(_csv_path, header=[0])

@@ -50,6 +50,11 @@ sudo chmod -R ugo+rX /home/masstermax/.local/lib/python3.8/site-packages/
 sudo apt install golang
 ```
 
+Для запуска run.py:
+```
+PYTHONPATH=./ python3 codesearch/cmd/run.py %command% %args%
+```
+
 ### elasticsearch tests
 Для работы с тестами я прописал в Makefile команды для запуска эластика, а также подключил 
 unittest - это всё для локальных тестов и чтобы поиграть с эластиком, посмотреть, какие
