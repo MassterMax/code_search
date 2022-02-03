@@ -1,6 +1,11 @@
 import json
 import os
+from pprint import pprint
+from typing import Dict
+
 from elasticsearch import Elasticsearch
+
+from codesearch.es.search_constructor import SearchConstructor
 from codesearch.es.vs import v1
 
 
@@ -21,21 +26,11 @@ class ElasticSearchClient:
         except IOError as e:
             return {'status': 'error', 'errors': e}
 
-    def load_data(self, index_name: str):
+    def load_data(self, index_name: str, data: Dict):
         # todo masstermax - rewrite, add json data location as a parameter
         try:
-            with open(f'{os.getcwd()}/codesearch/preproc/result.json', encoding='utf-8') as json_file:
-                data = json.load(json_file)
-                for entity in data['extracted']:  # todo change to just in data
-                    self.instance.index(index=index_name, document={
-                      'start_line': entity['start_line'],
-                      'location': entity['location'],
-                      'language': entity['language'],
-                      'identifiers': entity['identifiers'],
-                      'function_name': entity['function_name'],
-                      'parameters': entity['parameters'],
-                      'docstring': entity['docstring']
-                    })
+            for entity in data:
+                self.instance.index(index=index_name, document=entity)
         except Exception as e:
             return {'status': 'error', 'errors': e}
 
@@ -45,6 +40,11 @@ class ElasticSearchClient:
         search_request = v1.transform_input(search_request)
         if search_request is None:
             return {'status': 'error', 'errors': 'Failed to build search input'}
+        res = self.instance.search(index=index_name, body=search_request)
+        return v1.transform_output(res)
+
+    def search_doc(self, index_name: str, data: Dict):
+        search_request = SearchConstructor.make_query(data)
         res = self.instance.search(index=index_name, body=search_request)
         return v1.transform_output(res)
 

@@ -1,0 +1,14 @@
+{
+  "query": "multiplies two numbers",
+  "from": 0,
+  "size": 5,
+  "filters": {
+    "language": [
+      "Python",
+      "C++"
+    ],
+    "stargazers_count": {
+      "from": 100
+    }
+  }
+}

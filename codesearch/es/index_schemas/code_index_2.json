@@ -16,6 +16,11 @@
             "simple_stemmer"
           ],
           "tokenizer": "letter"
+        },
+        "camel": {
+          "type": "pattern",
+          "pattern": "([^\\p{L}\\d]+)|(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)|(?<=[\\p{L}&&[^\\p{Lu}]])(?=\\p{Lu})|(?<=\\p{Lu})(?=\\p{Lu}[\\p{L}&&[^\\p{Lu}]])",
+          "filter": ["simple_stemmer"]
         }
       }
     }
@@ -29,20 +34,28 @@
         "type": "text"
       },
       "language": {
-        "type": "text"
+        "type": "keyword"
       },
       "identifiers": {
         "type": "text"
       },
       "function_name": {
         "type": "text",
-        "analyzer": "simple_analyzer",
-        "search_analyzer": "simple_analyzer"
+        "analyzer": "camel",
+        "search_analyzer": "camel"
       },
       "parameters": {
         "type": "text"
       },
       "docstring": {
+        "type": "text",
+        "analyzer": "simple_analyzer",
+        "search_analyzer": "simple_analyzer"
+      },
+      "stargazers_count": {
+        "type": "integer"
+      },
+      "repo_id": {
         "type": "text"
       }
     }

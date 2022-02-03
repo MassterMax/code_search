@@ -59,3 +59,17 @@ PYTHONPATH=./ python3 codesearch/cmd/run.py %command% %args%
 Для работы с тестами я прописал в Makefile команды для запуска эластика, а также подключил 
 unittest - это всё для локальных тестов и чтобы поиграть с эластиком, посмотреть, какие
 маппинги и запросы можно делать
+
+
+### notes - full work
+```
+PYTHONPATH=./ python3 codesearch/cmd/run.py extract /mnt/c/Users/maxma/Documents/GitHub/code_search/codesearch/preproc/repositories.csv /mnt/c/Users/maxma/Documents/ /mnt/c/Users/maxma/Documents/GitHub/code_search/codesearch/preproc/ 8
+
+PYTHONPATH=./ python3 codesearch/cmd/run.py init code_index_2
+
+PYTHONPATH=./ python3 codesearch/cmd/run.py put code_index_2 /mnt/c/Users/maxma/Documents/GitHub/code_search/codesearch/preproc/
+
+PYTHONPATH=./ python3 codesearch/cmd/run.py search2 code_index_2 /mnt/c/Users/maxma/Documents/GitHub/code_search/codesearch/es/example_request.json
+
+PYTHONPATH=./ python3 codesearch/cmd/run.py delete code_index_2
+```
