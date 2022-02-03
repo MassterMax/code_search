@@ -65,7 +65,7 @@ def extract_from_csv(_csv_path: str, _storage_path: str, _output_directory: str,
             current_dict_size = len(json.dumps(data_to_write))
             if current_dict_size > _one_file_size * 1024 * 1024 or df.shape[0] - 1 == index:
                 # data[DATA_KEY].append(extract_data(path)[DATA_KEY])
-                with open(f'{_output_directory}/{cnt}.json', 'w') as fp:
+                with open(f'{_output_directory}/{cnt}.json', 'w+') as fp:
                     json.dump(data_to_write, fp)
                 cnt += 1
                 data_to_write = []

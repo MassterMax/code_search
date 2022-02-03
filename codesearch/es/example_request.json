@@ -1,7 +1,7 @@
 {
-  "query": "multiplies two numbers",
+  "query": "get columns of dataset",
   "from": 0,
-  "size": 5,
+  "size": 8,
   "filters": {
     "language": [
       "Python",
