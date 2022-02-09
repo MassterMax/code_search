@@ -27,7 +27,6 @@ class ElasticSearchClient:
             return {'status': 'error', 'errors': e}
 
     def load_data(self, index_name: str, data: Dict):
-        # todo masstermax - rewrite, add json data location as a parameter
         try:
             for entity in data:
                 self.instance.index(index=index_name, document=entity)

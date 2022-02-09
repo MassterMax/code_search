@@ -1,3 +1,4 @@
+import datetime
 import json
 import os
 from pprint import pprint
@@ -27,14 +28,14 @@ def delete(index_name: str):
 
 @cs.command()
 @click.argument("index_name")
-@click.argument("results_path")
-def put(index_name: str, results_path: str):
-    directory = os.fsencode(results_path)
+@click.argument("output_directory", type=click.Path(exists=True))
+def put(index_name: str, output_directory: str):
+    directory = os.fsencode(output_directory)
     for file in os.listdir(directory):
         filename = os.fsdecode(file)
         if filename.endswith(".json"):
-            print(f'loading: {filename}')
-            with open(f'{results_path}/{filename}', encoding='utf-8') as json_file:
+            print(f'start loading {filename} at {datetime.datetime.now()}')
+            with open(f'{output_directory}/{filename}', encoding='utf-8') as json_file:
                 data = json.load(json_file)
                 print(ES.load_data(index_name, data))
                 print(f'success: {filename}')
@@ -49,7 +50,7 @@ def search(index_name: str, search_request: str):
 
 @cs.command()
 @click.argument("index_name")
-@click.argument("path_to_json_request")
+@click.argument("path_to_json_request", type=click.Path(exists=True))
 def search2(index_name: str, path_to_json_request: str):
     """
     Args:
@@ -81,9 +82,9 @@ def search2(index_name: str, path_to_json_request: str):
 
 
 @cs.command()
-@click.argument("csv_path")
-@click.argument("storage_path")
-@click.argument("output_path")
+@click.argument("csv_path", type=click.Path(exists=True))
+@click.argument("storage_path", type=click.Path(exists=True))
+@click.argument("output_path", type=click.Path(exists=True))
 @click.argument("file_size_mb")
 def extract(csv_path: str, storage_path: str, output_path: str, file_size_mb: int = 1024):
     extract_from_csv(csv_path, storage_path, output_path, file_size_mb)

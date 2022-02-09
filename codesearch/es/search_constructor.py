@@ -45,7 +45,7 @@ class SearchConstructor:
             FILTER_MAPPING[el](filters, data["filters"][el])
 
 
-INF = 1000000000
+INF = float("inf")
 FILTER_MAPPING = {
     "language": lambda filters, value: filters.append({
         "terms": {

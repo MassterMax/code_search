@@ -15,7 +15,6 @@ def transform_input(user_request):
             }
         }
     }
-# todo - надо поработать с поиском, сделать фильтрацию, сложный поиск, ранжирование
 
 
 def transform_output(search_result):

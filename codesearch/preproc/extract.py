@@ -1,10 +1,11 @@
+import datetime
 import json
 import os
 import shutil
 import time
 from pathlib import Path
 from typing import Iterator, Tuple, Dict, Type, List
-import datetime
+
 import pandas as pd
 from cytoolz import groupby
 from git import Repo
@@ -16,19 +17,22 @@ from preprocess.utils import ProgrammingLanguages
 from codesearch.preproc.languages import CppRules, PythonRules, LanguageRules
 
 # list of all supported languages
-LANGUAGES: Dict[str, Type[LanguageRules]] = {PythonRules.name: PythonRules, CppRules.name: CppRules}
+LANGUAGES: Dict[str, Type[LanguageRules]] = {
+    PythonRules.name: PythonRules,
+    CppRules.name: CppRules
+}
 
 
-def extract_from_csv(_csv_path: str, _storage_path: str, _output_directory: str, _one_file_size: int = 1024):
+def extract_from_csv(csv_path: str, storage_path: str, output_directory: str, one_file_size: int = 1024):
     """
     A function to extract data from git repo with provided csv
     Args:
-        _csv_path: path to csv file
-        _storage_path: a directory where tmp folder with repos will be created
-        _output_directory: a directory where .json file will be stored
-        _one_file_size: maximum size of one produced .json file in megabytes
+        csv_path: path to csv file
+        storage_path: a directory where tmp folder with repos will be created
+        output_directory: a directory where .json file will be stored
+        one_file_size: maximum size of one produced .json file in megabytes
 
-    Returns:
+    Returns: nothing
 
     """
 
@@ -36,12 +40,12 @@ def extract_from_csv(_csv_path: str, _storage_path: str, _output_directory: str,
     start_datetime = datetime.datetime.now()
     total_size = 0
     exceptions = 0
-    cnt = 0
-    _one_file_size = int(_one_file_size)
+    output_files_cnt = 0
+    one_file_size = int(one_file_size)
     data_to_write = []
 
-    df = pd.read_csv(_csv_path, header=[0])
-    temp_path = f'{_storage_path}/tmp'
+    df = pd.read_csv(csv_path, header=[0])
+    temp_path = f'{storage_path}/tmp'
     Path(temp_path).mkdir()  # there will be an exception if folder already exists
 
     for index, row in df.iterrows():
@@ -49,7 +53,7 @@ def extract_from_csv(_csv_path: str, _storage_path: str, _output_directory: str,
         name = row['name']
         url = f'https://github.com/{owner}/{name}'
         repo_path = f'{temp_path}/{owner}_{name}'
-        print(f"processing: {url}")
+        print(f"processing {url} at {datetime.datetime.now()}")
 
         try:
             repo = Repo.clone_from(url, repo_path)
@@ -63,13 +67,12 @@ def extract_from_csv(_csv_path: str, _storage_path: str, _output_directory: str,
 
             data_to_write.extend(data)
             current_dict_size = len(json.dumps(data_to_write))
-            if current_dict_size > _one_file_size * 1024 * 1024 or df.shape[0] - 1 == index:
-                # data[DATA_KEY].append(extract_data(path)[DATA_KEY])
-                with open(f'{_output_directory}/{cnt}.json', 'w+') as fp:
+            if current_dict_size > one_file_size * 1024 * 1024 or df.shape[0] - 1 == index:
+                with open(f'{output_directory}/{output_files_cnt}.json', 'w+') as fp:
                     json.dump(data_to_write, fp)
-                cnt += 1
+                output_files_cnt += 1
                 data_to_write = []
-            print(f'{url} processed successfully!')
+            print(f'{url} processed successfully at {datetime.datetime.now()}')
         except Exception as e:
             print(f"{url}: exception occurred - {e}")
             exceptions += 1
@@ -139,15 +142,12 @@ def extract_data(repositories_path: str, from_git: bool = False) -> List[Dict]:
                 'identifiers': []}
 
         if lang.value not in LANGUAGES:
-            # print(f"language is not supported yet: {lang.value} for file {data['location']}")  # todo for debug
             continue
 
         # Group nodes by level for nice output
         tree_nodes_by_depth = groupby(lambda i: i[0], traverse_tree(tree_identifier))
 
         for level, identifiers in sorted(tree_nodes_by_depth.items()):
-            # print(f"L{level}: {'; '.join([i[1].type + ' ' + get_str(i) for i in identifiers])}")  # todo for debug
-
             # get all identifiers
             data['identifiers'].extend(get_identifiers(identifiers))
 
@@ -171,11 +171,3 @@ def extract_data(repositories_path: str, from_git: bool = False) -> List[Dict]:
         all_functions.append(data)
 
     return all_functions
-
-
-if __name__ == '__main__':
-    directory = os.getcwd()
-    csv_path = f"{directory}/repositories.csv"
-    storage_path = "/mnt/c/Users/maxma/Documents"
-
-    extract_from_csv(csv_path, storage_path, directory, 1)

@@ -1,5 +1,4 @@
 import unittest
-from pprint import pprint
 
 from codesearch.es.client import ElasticSearchClient
 
