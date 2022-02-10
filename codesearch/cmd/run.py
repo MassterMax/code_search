@@ -8,9 +8,13 @@ import click
 from codesearch.es.client import ElasticSearchClient
 from codesearch.preproc.extract import extract_from_csv
 
+ES = ElasticSearchClient() 
 
 @click.group()
 def cs():
+    """
+    A command of type group. All others are attached to it.
+    """
     pass
 
 
@@ -102,8 +106,8 @@ def search2(index_name: str, path_to_json_request: str):
 @click.argument("csv_path", type=click.Path(exists=True))
 @click.argument("storage_path", type=click.Path(exists=True))
 @click.argument("output_path", type=click.Path(exists=True))
-@click.argument("file_size_mb")
-def extract(csv_path: str, storage_path: str, output_path: str, file_size_mb: int = 1024):
+@click.argument("file_size_mb", default=1024)
+def extract(csv_path: str, storage_path: str, output_path: str, file_size_mb: int):
     """
     Extract data from scv file
     Args:
@@ -113,8 +117,3 @@ def extract(csv_path: str, storage_path: str, output_path: str, file_size_mb: in
         file_size_mb: size of each json file
     """
     extract_from_csv(csv_path, storage_path, output_path, file_size_mb)
-
-
-if __name__ == '__main__':
-    ES = ElasticSearchClient()
-    cs()
