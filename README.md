@@ -24,9 +24,13 @@ sudo chmod -R ugo+rX /home/$USER/.local/lib/python3.8/site-packages/
 sudo apt install golang
 ```
 
-Для запуска run.py:
 ```shell
-PYTHONPATH=./ python3 codesearch/cmd/run.py %command% %args%
+alias cs='python3 codesearch/cmd/run.py '
+```
+
+Для установки зависимостей и создания модуля нужно запустить из корневой папки команду
+```shell
+pip install -e .
 ```
 
 ## Elasticsearch tests
@@ -39,11 +43,6 @@ unittest - это всё для локальных тестов и чтобы п
 
 Запускаем команды из корневой папки, с запущенным и работающим elasticsearch
 
-Можно использовать alias для сокращения комманд
-```shell
-alias cs='python3 codesearch/cmd/run.py '
-```
-
 ### Примеры:
 
 Создать индекс по схеме
@@ -53,12 +52,12 @@ cs init index_name
 
 Предобработать код
 ```shell
-make extract_data
+cs extract git/repositories/urls.csv working/directory/for/temporaty/files/ directory/where/to/write/result/
 ```
 
-Добавить данные в индекс
+Добавить  в индекс данные, сложенные в папку results на предыдущем шаге
 ```shell
-cs put index_name
+cs put index_name results
 ```
 
 Поиск в индексе
@@ -67,6 +66,12 @@ cs search index_name code
 
 cs search index_name "code searching"
 ```
+
+Поиск в индексе, запрос записан в виде json
+```shell
+cs search2 index_name path/to/request.json
+```
+
 
 Удалить индекс
 ```shell
