@@ -33,7 +33,6 @@ def extract_from_csv(csv_path: str, storage_path: str, output_directory: str, on
         one_file_size: maximum size of one produced .json file in megabytes
 
     Returns: nothing
-
     """
 
     t = time.time()
@@ -67,7 +66,7 @@ def extract_from_csv(csv_path: str, storage_path: str, output_directory: str, on
 
             data_to_write.extend(data)
             current_dict_size = len(json.dumps(data_to_write))
-            if current_dict_size > one_file_size * 1024 * 1024 or df.shape[0] - 1 == index:
+            if current_dict_size > one_file_size * 1024 * 1024:
                 with open(f'{output_directory}/{output_files_cnt}.json', 'w+') as fp:
                     json.dump(data_to_write, fp)
                 output_files_cnt += 1
@@ -76,6 +75,11 @@ def extract_from_csv(csv_path: str, storage_path: str, output_directory: str, on
         except Exception as e:
             print(f"{url}: exception occurred - {e}")
             exceptions += 1
+
+        # save residual data
+        if len(json.dumps(data_to_write)) > 2:
+            with open(f'{output_directory}/{output_files_cnt}.json', 'w+') as fp:
+                json.dump(data_to_write, fp)
 
         shutil.rmtree(repo_path, True)
 
