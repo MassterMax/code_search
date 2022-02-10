@@ -4,6 +4,12 @@ from typing import Dict, List
 class SearchConstructor:
     @classmethod
     def make_query(cls, data: Dict):
+        """
+        Make elastic query from given request
+        Args:
+            data: request like example_request.json
+        Returns: elastic query
+        """
         query = cls.main_body(data["query"])
         query['from'] = data.get('from', 0)
         query['size'] = data.get('size', 5)
@@ -41,6 +47,13 @@ class SearchConstructor:
 
     @classmethod
     def add_filters(cls, filters: List, data: Dict):
+        """
+        Add filters to query body
+        Args:
+            filters: filters part of elastic query
+            (inside filter-bool-must)
+            data: filter parameters
+        """
         for el in data["filters"]:
             FILTER_MAPPING[el](filters, data["filters"][el])
 

@@ -3,12 +3,17 @@ import unittest
 from codesearch.es.client import ElasticSearchClient
 
 
-# Для работы надо запустить docker эластика - test_env_up
 class ClientTest(unittest.TestCase):
     def setUp(self):
+        """
+        Set up test environment first - the test class calls elastic
+        """
         self.es = ElasticSearchClient()
 
     def test_create_delete_index(self):
+        """
+        Create and delete index test
+        """
         response = self.es.create("test_index")
         assert 'acknowledged' in response and response['acknowledged'], response
 

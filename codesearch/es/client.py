@@ -1,6 +1,5 @@
 import json
 import os
-from pprint import pprint
 from typing import Dict
 
 from elasticsearch import Elasticsearch
@@ -14,6 +13,13 @@ class ElasticSearchClient:
         self.instance = Elasticsearch()
 
     def create(self, index_name: str):
+        """
+        Create index with schema, defined in index_schemas folder
+        Args:
+            index_name: name of elastic index
+
+        Returns: result as Dict
+        """
         dir_path = os.path.dirname(__file__)
         index_schema_path = f"{dir_path}/index_schemas/{index_name}.json"
 
@@ -43,11 +49,26 @@ class ElasticSearchClient:
         return v1.transform_output(res)
 
     def search_doc(self, index_name: str, data: Dict):
+        """
+        Search data in index with request like in example_request
+        Args:
+            index_name: index to search
+            data: provided request
+
+        Returns: result from elastic
+        """
         search_request = SearchConstructor.make_query(data)
         res = self.instance.search(index=index_name, body=search_request)
         return v1.transform_output(res)
 
     def delete(self, index_name: str):
+        """
+        Delete elastic index
+        Args:
+            index_name: name of index
+
+        Returns: Dictionary-like result
+        """
         try:
             self.instance.indices.delete(index=index_name)
         except Exception as e:

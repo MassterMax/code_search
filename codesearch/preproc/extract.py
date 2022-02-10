@@ -90,6 +90,14 @@ def extract_from_csv(csv_path: str, storage_path: str, output_directory: str, on
 
 
 def extract_data(repositories_path: str, from_git: bool = False) -> List[Dict]:
+    """
+    A method to extract function data from git/in-storage repo and return all entities in List
+    Args:
+        repositories_path: path to folder with git projects or path to file with git links
+        from_git: False = given path is folder with projects, otherwise - it is a file with links
+
+    Returns: list of all extracted function entities as
+    """
     def traverse_tree(entity: TreeEntity, _level: int = 0) -> Iterator[Tuple[int, TreeEntity]]:
         """Yield tree structure with depth level"""
         yield _level, entity

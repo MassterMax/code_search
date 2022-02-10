@@ -17,12 +17,22 @@ def cs():
 @cs.command()
 @click.argument("index_name")
 def init(index_name: str):
+    """
+    Initialize elastic index with given name
+    Args:
+        index_name: elastic index name
+    """
     print(ES.create(index_name))
 
 
 @cs.command()
 @click.argument("index_name")
 def delete(index_name: str):
+    """
+    Delete elastic index with given name
+    Args:
+        index_name: elastic index name
+    """
     print(ES.delete(index_name))
 
 
@@ -30,6 +40,13 @@ def delete(index_name: str):
 @click.argument("index_name")
 @click.argument("output_directory", type=click.Path(exists=True))
 def put(index_name: str, output_directory: str):
+    """
+    Put to elastic index entities from directory with jsons
+    Args:
+        index_name: elastic index
+        output_directory: directory with jsons - each json should be
+        an array of entities prepared to be stored
+    """
     directory = os.fsencode(output_directory)
     for file in os.listdir(directory):
         filename = os.fsdecode(file)
@@ -87,6 +104,14 @@ def search2(index_name: str, path_to_json_request: str):
 @click.argument("output_path", type=click.Path(exists=True))
 @click.argument("file_size_mb")
 def extract(csv_path: str, storage_path: str, output_path: str, file_size_mb: int = 1024):
+    """
+    Extract data from scv file
+    Args:
+        csv_path: path to csv file with repos
+        storage_path: path where to store repos
+        output_path: path where to store output .jsons
+        file_size_mb: size of each json file
+    """
     extract_from_csv(csv_path, storage_path, output_path, file_size_mb)
 
 
