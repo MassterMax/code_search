@@ -6,11 +6,19 @@ from elasticsearch import Elasticsearch
 
 from codesearch.es.search_constructor import SearchConstructor
 from codesearch.es.vs import v1
+from ssl import create_default_context
 
 
 class ElasticSearchClient:
     def __init__(self):
-        self.instance = Elasticsearch()
+        context = create_default_context(cafile="ca.crt")
+        self.instance = Elasticsearch(
+            ['localhost'],
+            http_auth=('elastic', ),
+            scheme="https",
+            port=9200,
+            ssl_context=context
+        )
 
     def create(self, index_name: str):
         """
