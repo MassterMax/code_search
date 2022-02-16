@@ -4,11 +4,13 @@ import os
 from pprint import pprint
 
 import click
+from tqdm import tqdm
 
 from codesearch.es.client import ElasticSearchClient
 from codesearch.preproc.extract import extract_from_csv
 
-ES = ElasticSearchClient() 
+ES = ElasticSearchClient()
+
 
 @click.group()
 def cs():
@@ -52,14 +54,12 @@ def put(index_name: str, output_directory: str):
         an array of entities prepared to be stored
     """
     directory = os.fsencode(output_directory)
-    for file in os.listdir(directory):
+    for file in tqdm(os.listdir(directory)):
         filename = os.fsdecode(file)
         if filename.endswith(".json"):
-            print(f'start loading {filename} at {datetime.datetime.now()}')
             with open(f'{output_directory}/{filename}', encoding='utf-8') as json_file:
                 data = json.load(json_file)
                 print(ES.load_data(index_name, data))
-                print(f'success: {filename}')
 
 
 @cs.command()

@@ -172,3 +172,4 @@ atlassian-ide-plugin.xml
 !/preprocess/extractors/lib/linux-grammar.zip
 codesearch/preproc/repositories.csv
 /notes.md
+/codesearch/preproc/repositories.txt

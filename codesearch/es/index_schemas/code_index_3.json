@@ -1,0 +1,71 @@
+{
+  "settings": {
+    "analysis": {
+      "filter": {
+        "simple_stemmer": {
+          "type": "stemmer",
+          "language": "english"
+        }
+      },
+      "analyzer": {
+        "simple_analyzer": {
+          "type": "custom",
+          "stopwords": "_english_",
+          "filter": [
+            "lowercase",
+            "simple_stemmer"
+          ],
+          "tokenizer": "letter"
+        },
+        "camel": {
+          "type": "pattern",
+          "pattern": "([^\\p{L}\\d]+)|(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)|(?<=[\\p{L}&&[^\\p{Lu}]])(?=\\p{Lu})|(?<=\\p{Lu})(?=\\p{Lu}[\\p{L}&&[^\\p{Lu}]])",
+          "filter": [
+            "simple_stemmer"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "identifiers": {
+        "type": "text"
+      },
+      "split_identifiers": {
+        "type": "text"
+      },
+      "docstring": {
+        "type": "text",
+        "analyzer": "simple_analyzer",
+        "search_analyzer": "simple_analyzer"
+      },
+      "function_name": {
+        "type": "text",
+        "analyzer": "camel",
+        "search_analyzer": "camel"
+      },
+      "arguments": {
+        "type": "text"
+      },
+      "function_body": {
+        "type": "text"
+      },
+      "start_line": {
+        "type": "integer"
+      },
+      "location": {
+        "type": "text"
+      },
+      "language": {
+        "type": "keyword"
+      },
+      "stargazers_count": {
+        "type": "integer"
+      },
+      "repo_id": {
+        "type": "text"
+      }
+    }
+  }
+}

@@ -26,8 +26,9 @@ class SearchConstructor:
                         "multi_match": {
                             "query": query,
                             "fields": [
-                                "docstring^3",
+                                "docstring^4",
                                 "identifiers",
+                                "split_identifiers^2",
                                 "function_name"
                             ],
                             "fuzziness": "AUTO",
