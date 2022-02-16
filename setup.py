@@ -17,6 +17,7 @@ setup(
         'pandas>=1.4.0',
         'cytoolz>=0.10.1',
         'pyarrow>=6.0.1',
+        'python-dotenv>=0.19.2'
     ],
     entry_points={
         'console_scripts': [
