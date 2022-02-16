@@ -1,20 +1,24 @@
 import json
 import os
+from ssl import create_default_context
 from typing import Dict
 
+from dotenv import load_dotenv
 from elasticsearch import Elasticsearch
 
 from codesearch.es.search_constructor import SearchConstructor
 from codesearch.es.vs import v1
-from ssl import create_default_context
-
 
 class ElasticSearchClient:
     def __init__(self):
-        context = create_default_context(cafile="ca.crt")
+        """
+        Access elasticsearch by https://localhost::9200
+        """
+        load_dotenv()
+        context = create_default_context(cafile=os.environ['PATH_TO_ES_CERTIFICATE'])
         self.instance = Elasticsearch(
             ['localhost'],
-            http_auth=('elastic', ),
+            http_auth=('elastic', os.environ['ELASTIC_PASSWORD']),
             scheme="https",
             port=9200,
             ssl_context=context
