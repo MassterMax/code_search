@@ -47,8 +47,6 @@ def extract_from_csv(csv_path: str, storage_path: str, output_directory: str, on
     Path(temp_path).mkdir()  # there will be an exception if folder already exists
 
     for index, row in tqdm(df.iterrows()):
-        if index < 9995:
-            continue
         owner = row['owner']
         name = row['name']
         url = f'https://github.com/{owner}/{name}'
