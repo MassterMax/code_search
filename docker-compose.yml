@@ -105,7 +105,19 @@ services:
       - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
       - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
     mem_limit: ${MEM_LIMIT}
-    
+  cs01:
+    depends_on:
+     - es01
+    links:
+     - es01
+    image: preproc_image
+    volumes:
+      - ${}:/home/mounted
+    user: "0"
+    stdin_open: true
+    tty: true
+        
+
 volumes:
   data01:
     driver: local
