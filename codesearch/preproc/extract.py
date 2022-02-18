@@ -70,6 +70,9 @@ def extract_from_csv(csv_path: str, storage_path: str, output_directory: str, on
                 output_files_cnt += 1
                 data_to_write = []
         except GitCommandError as e:
+            print(f"{url}: git exception occurred - {e}")
+            exceptions += 1
+        except Exception as e:
             print(f"{url}: exception occurred - {e}")
             exceptions += 1
 

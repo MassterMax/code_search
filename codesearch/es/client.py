@@ -9,6 +9,7 @@ from elasticsearch import Elasticsearch
 from codesearch.es.search_constructor import SearchConstructor
 from codesearch.es.vs import v1
 
+
 class ElasticSearchClient:
     def __init__(self):
         """
