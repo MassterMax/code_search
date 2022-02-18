@@ -12,7 +12,7 @@ from codesearch.es.vs import v1
 class ElasticSearchClient:
     def __init__(self):
         """
-        Access elasticsearch by https://localhost::9200
+        Access elasticsearch by 9200 port
         """
         load_dotenv()
         context = create_default_context(cafile=os.environ['PATH_TO_ES_CERTIFICATE'])

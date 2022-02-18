@@ -4,8 +4,9 @@ WORKDIR /code_search
 
 RUN apt-get update && apt-get install -y \
     python3-pip git vim
-RUN pip install git+https://Ksenia-C:{token}@github.com/HSE-JetBrains-department/preprocess@master
+RUN pip install git+https://login:token@github.com/HSE-JetBrains-department/preprocess@master
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get install -y golang
 COPY . .
+RUN rm -rf Dockerfile
 RUN pip install -e .
