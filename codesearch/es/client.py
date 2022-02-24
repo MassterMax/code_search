@@ -17,7 +17,7 @@ class ElasticSearchClient:
         load_dotenv()
         context = create_default_context(cafile=os.environ['PATH_TO_ES_CERTIFICATE'])
         self.instance = Elasticsearch(
-            ['localhost', 'es01'],
+            ['localhost', os.environ['ES_HOST_NAME']],
             http_auth=('elastic', os.environ['ELASTIC_PASSWORD']),
             scheme="https",
             port=9200,

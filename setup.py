@@ -13,11 +13,12 @@ setup(
         'tqdm>=4.43.0',
         'tree_sitter>=0.2.1',
         'Click>=8.0.3',
-        'elasticsearch==7.16.3',
+        'elasticsearch>=7.16.3, <8.0.0',
         'pandas>=1.4.0',
         'cytoolz>=0.10.1',
         'pyarrow>=6.0.1',
-        'python-dotenv>=0.19.2'
+        'python-dotenv>=0.19.2',
+        'GitPython>=3.1.26',
     ],
     entry_points={
         'console_scripts': [
