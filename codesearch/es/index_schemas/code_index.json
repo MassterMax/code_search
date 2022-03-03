@@ -1,38 +1,98 @@
 {
   "settings": {
+    "number_of_shards": 1,
     "analysis": {
-      "filter": {
-        "simple_stemmer": {
-          "type": "stemmer",
-          "language": "english"
+        "filter": {
+            "code": {
+                "type": "pattern_capture",
+                "preserve_original": true,
+                "patterns": [
+                  "(\\p{Ll}+|\\p{Lu}\\p{Ll}+|\\p{Lu}+)",
+                  "(?=([\\p{Lu}]+[\\p{L}]+))",
+                  "([\\p{L}\\d_]+)",
+                  "(\\d+)",
+                  "([\\p{L}\\p{N}_.-]+)",
+                  "\\.([^.]+)(?=\\.|\\s|\\Z)"
+                ]
+            },
+            "simple_stemmer": {
+              "type": "stemmer",
+              "language": "english"
+            }
+        },
+        "analyzer": {
+            "code_analyzer": {
+                "type": "custom",
+                "tokenizer": "whitespace",
+                "filter": ["code", "lowercase", "asciifolding", "remove_duplicates"]
+            },
+            "code_search_analyzer": {
+                "type": "custom",
+                "tokenizer": "whitespace",
+                "filter": ["lowercase", "asciifolding"]
+            },
+            "camel": {
+              "type": "pattern",
+              "pattern": "([^\\p{L}\\d]+)|(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)|(?<=[\\p{L}&&[^\\p{Lu}]])(?=\\p{Lu})|(?<=\\p{Lu})(?=\\p{Lu}[\\p{L}&&[^\\p{Lu}]])",
+              "filter": [
+                "simple_stemmer"
+              ]
+            },
+            "simple_analyzer": {
+              "type": "custom",
+              "stopwords": "_english_",
+              "filter": [
+                "lowercase",
+                "simple_stemmer"
+              ],
+              "tokenizer": "letter"
+            }
         }
-      },
-      "analyzer": {
-        "simple_analyzer": {
-          "type": "custom",
-          "stopwords": "_english_",
-          "filter": [
-            "lowercase",
-            "simple_stemmer"
-          ],
-          "tokenizer": "letter"
-        }
-      }
     }
   },
   "mappings": {
     "properties": {
-      "url": {
-        "type": "text"
-      },
-      "file": {
-        "type": "text"
-      },
-      "function_name": {
-        "type": "text",
-        "analyzer": "simple_analyzer",
-        "search_analyzer": "simple_analyzer"
-      }
+    "function_name": {
+      "type": "text",
+      "analyzer": "camel",
+      "search_analyzer": "camel"
+    },
+    "function_body": {
+      "type": "text",
+      "analyzer": "code_analyzer",
+      "search_analyzer": "code_search_analyzer"
+    },
+    "identifiers": {
+      "type": "text"
+    },
+    "split_identifiers": {
+      "type": "text"
+    },
+    "docstring": {
+      "type": "text",
+      "analyzer": "simple_analyzer",
+      "search_analyzer": "simple_analyzer"
+    },
+    "arguments": {
+      "type": "text"
+    },
+    "start_line": {
+      "type": "integer"
+    },
+    "location": {
+      "type": "text",
+      "analyzer": "camel",
+      "search_analyzer": "camel"
+    },
+    "language": {
+      "type": "keyword"
+    },
+    "stargazers_count": {
+      "type": "integer"
+    },
+    "repo_id": {
+      "type": "text"
     }
+  }
   }
 }
