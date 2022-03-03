@@ -2,6 +2,8 @@
 
 .vscode/*
 
+codesearch/es/explain_plans/*
+!codesearch/es/explain_plans/.gitkeep
 codesearch/preproc/result.json
 /tests/es/_trial_temp/
 

@@ -6,6 +6,7 @@ from pprint import pprint
 import click
 from tqdm import tqdm
 
+import codesearch.constants as consts
 from codesearch.es.client import ElasticSearchClient
 from codesearch.preproc.extract import extract_from_csv
 
@@ -66,7 +67,28 @@ def put(index_name: str, output_directory: str):
 @click.argument("index_name")
 @click.argument("search_request")
 def search(index_name: str, search_request: str):
-    pprint(ES.search(index_name, search_request))
+    """
+    Args:
+        search_request: request as a string
+        index_name: index in which documents are searched
+    """
+    pprint(ES.search(index_name, search_request, consts.REALISE_SEARCH_MODE))
+
+
+@cs.command()
+@click.argument("index_name")
+@click.argument("search_request")
+def explain(index_name: str, search_request: str):
+    """
+    Same as search but save explain in es/explain_plans
+    """
+    pprint(ES.search(index_name, search_request, consts.EXPLAINT_SEARCH_MODE))
+
+@cs.command()
+@click.argument("index_name")
+@click.argument("search_request")
+def time(index_name: str, search_request: str):
+    pprint(ES.search(index_name, search_request, consts.TIMINGS_SEARCH_MODE))
 
 
 @cs.command()
