@@ -6,6 +6,7 @@ from typing import Dict
 from dotenv import load_dotenv
 from elasticsearch import Elasticsearch
 
+import codesearch.constants as consts
 from codesearch.es.search_constructor import SearchConstructor
 from codesearch.es.vs import v1
 
@@ -54,12 +55,12 @@ class ElasticSearchClient:
 
         return {'status': 'ok'}
 
-    def search(self, index_name: str, search_request: str):
-        search_request = v1.transform_input(search_request)
+    def search(self, index_name: str, user_request: str, mode=consts.REALISE_SEARCH_MODE):
+        search_request = v1.transform_input(user_request, mode)
         if search_request is None:
             return {'status': 'error', 'errors': 'Failed to build search input'}
         res = self.instance.search(index=index_name, body=search_request)
-        return v1.transform_output(res)
+        return v1.transform_output(res, user_request, mode)
 
     def search_doc(self, index_name: str, data: Dict):
         """
