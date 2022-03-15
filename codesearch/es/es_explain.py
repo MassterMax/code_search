@@ -4,10 +4,12 @@ import time
 
 from typing import Dict
 
+
 class SearchResponseAnalyzer:
     """
     Class to process debugging info from elastic response into a more readable format
-    """  
+    """
+
     @classmethod
     def extract_explain_info(cls, explain_section: Dict):
         """
@@ -18,7 +20,7 @@ class SearchResponseAnalyzer:
         Returns: result as dict
         """
         result = {'description': explain_section['description'],
-                    'value': explain_section['value']}
+                  'value': explain_section['value']}
         if 'computed as' in explain_section['description']:
             return result
         result['details'] = []
@@ -35,17 +37,18 @@ class SearchResponseAnalyzer:
             explain_json: result of extract_explain_info(...)
         Returns: -
         """
+
         def print_plan(explain_json: Dict, format_prefix: str):
             """
             Recursively print nodes information
             Args:
                 format_prefix: indent at the beginning of a line
             """
-            decription = explain_json['description']
-            if len(decription) >= len('weight') and \
-                 'weight' == decription[0: len('weight')]:
-                field_name = decription[len('weight('): decription.find(':')]
-                token = decription[decription.find(':') + 1: decription.find(' ')]
+            description = explain_json['description']
+            if len(description) >= len('weight') and \
+                    'weight' == description[0: len('weight')]:
+                field_name = description[len('weight('): description.find(':')]
+                token = description[description.find(':') + 1: description.find(' ')]
                 fout.write(f'{format_prefix}{field_name}: "{token}"\twith score {explain_json["value"]}\n')
                 return
             fout.write(f'{format_prefix}{explain_json["description"]}\twith value {explain_json["value"]}\n')
@@ -56,7 +59,6 @@ class SearchResponseAnalyzer:
         for doc in explain_json:
             fout.write(f'id: {doc["doc_id"]}, score: {doc["score"]}\n')
             print_plan(doc['explain'], '  ')
-
 
     @classmethod
     def explain_score(cls, es_result: Dict, user_request: str):
@@ -81,7 +83,6 @@ class SearchResponseAnalyzer:
             fout.write(user_request + '\n')
             cls.pretty_explain(fout, explain_json)
             json.dump(explain_json, fout)
-
 
     @classmethod
     def explain_time(cls, es_result: Dict):

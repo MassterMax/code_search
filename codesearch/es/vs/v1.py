@@ -3,7 +3,8 @@ from typing import Dict
 import codesearch.constants as consts
 from codesearch.es.es_explain import SearchResponseAnalyzer
 
-resp_analizer = SearchResponseAnalyzer()
+resp_analyzer = SearchResponseAnalyzer()
+
 
 def transform_input(user_request, mode=consts.REALISE_SEARCH_MODE):
     result = dict()
@@ -38,19 +39,19 @@ def transform_input(user_request, mode=consts.REALISE_SEARCH_MODE):
                 }
             }
         }
-    if mode == consts.EXPLAINT_SEARCH_MODE:
+    if mode == consts.EXPLAIN_SEARCH_MODE:
         result["explain"] = True
     if mode == consts.TIMINGS_SEARCH_MODE:
         result["profile"] = True
-    return result    
+    return result
 
 
 def transform_output(search_result, user_request: str, mode=consts.REALISE_SEARCH_MODE):
-    if mode == consts.EXPLAINT_SEARCH_MODE:
-        resp_analizer.explain_score(search_result, user_request)
+    if mode == consts.EXPLAIN_SEARCH_MODE:
+        resp_analyzer.explain_score(search_result, user_request)
     if mode == consts.TIMINGS_SEARCH_MODE:
-        resp_analizer.explain_time(search_result, user_request)
-    return [{'url' : f"{el['_source']['location']}#L{el['_source']['start_line'] + 1}",
+        resp_analyzer.explain_time(search_result, user_request)
+    return [{'url': f"{el['_source']['location']}#L{el['_source']['start_line'] + 1}",
              'lng': el['_source']['language'],
              'func': el['_source']['function_name'],
              'body': el['_source']['function_body'],

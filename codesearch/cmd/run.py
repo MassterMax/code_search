@@ -82,7 +82,7 @@ def explain(index_name: str, search_request: str):
     """
     Same as search but save explain in es/explain_plans
     """
-    pprint(ES.search(index_name, search_request, consts.EXPLAINT_SEARCH_MODE))
+    pprint(ES.search(index_name, search_request, consts.EXPLAIN_SEARCH_MODE))
 
 @cs.command()
 @click.argument("index_name")
