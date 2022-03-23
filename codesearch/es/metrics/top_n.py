@@ -15,10 +15,10 @@ def calculate_metric(responses: List[List[Dict[str, Any]]], correct_answers: Lis
 
     """
     score = 0.0
-    for result in responses:
+    for j, result in enumerate(responses):
         for i, entity in enumerate(result):
             if i == top_n:
                 break
-            if entity['url'] == correct_answers[i]:
+            if entity['url'] == correct_answers[j]:
                 score += 1
     return score / len(correct_answers)
