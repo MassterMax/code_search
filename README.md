@@ -72,8 +72,12 @@ cs search index_name "code searching"
 cs search2 index_name path/to/request.json
 ```
 
-
 Удалить индекс
 ```shell
 cs delete index_name
+```
+
+Подсчёт метрики top_n (n=10) на своём датасете
+```shell
+cs calculate-top-n-metric code_index codesearch/es/metrics/example_dataset.json 10
 ```
