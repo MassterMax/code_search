@@ -174,3 +174,5 @@ atlassian-ide-plugin.xml
 codesearch/preproc/repositories.csv
 /notes.md
 /codesearch/preproc/repositories.txt
+
+.env
