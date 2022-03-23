@@ -175,7 +175,7 @@ def calculate_top_n_metric(index_name: str, path_to_json_dataset: str, top_n: in
         data = json.load(f)
 
     queries = [entity["query"] for entity in data]
-    answers = [entity["answer"] for entity in data]
+    answers = [entity["url"] for entity in data]
 
     responses = []
     for query in queries:
