@@ -84,6 +84,7 @@ def explain(index_name: str, search_request: str):
     """
     pprint(ES.search(index_name, search_request, consts.EXPLAIN_SEARCH_MODE))
 
+
 @cs.command()
 @click.argument("index_name")
 @click.argument("search_request")
@@ -93,8 +94,9 @@ def time(index_name: str, search_request: str):
 
 @cs.command()
 @click.argument("index_name")
-@click.argument("path_to_json_request", type=click.Path(exists=True))
-def search2(index_name: str, path_to_json_request: str):
+@click.option('--path_to_json_request', '-p', type=click.Path(exists=True), default=None)
+@click.option('--search_query', '-q', default=None)
+def search_doc(index_name: str, path_to_json_request: str, search_query: str) -> None:
     """
     Args:
         index_name: index where we search
@@ -111,16 +113,25 @@ def search2(index_name: str, path_to_json_request: str):
               "from": 500,
               "to" : 10000
             },
-            "location": {todo}
           }
         }
-        // todo - add validation via pydantic
 
     Returns: request result
 
     """
-    with open(path_to_json_request, 'r') as f:
-        data = json.load(f)
+    if path_to_json_request is None and search_query is None:
+        raise ValueError("You should specify path to request or query!")
+
+    if search_query is None:
+        with open(path_to_json_request, 'r') as f:
+            data = json.load(f)
+    else:
+        data = {"query": search_query, "from": 0, "size": 5,
+                "filters": {"language": ["Python", "C++"],
+                            "stargazers_count": {"from": 50}
+                            }
+                }
+
     pprint(ES.search_doc(index_name, data))
 
 

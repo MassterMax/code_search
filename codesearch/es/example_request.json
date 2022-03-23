@@ -1,14 +1,14 @@
 {
   "query": "get columns of dataset",
   "from": 0,
-  "size": 8,
+  "size": 5,
   "filters": {
     "language": [
       "Python",
       "C++"
     ],
     "stargazers_count": {
-      "from": 100
+      "from": 50
     }
   }
 }

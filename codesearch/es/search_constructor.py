@@ -26,11 +26,16 @@ class SearchConstructor:
                         "multi_match": {
                             "query": query,
                             "fields": [
-                                "docstring^4",
-                                "identifiers",
+                                # exact occurrence
+                                "identifiers^2",
                                 "split_identifiers^2",
-                                "function_name"
+                                "function_body^2",
+                                # meaning
+                                "docstring^4",
+                                "location"
+                                "function_name^2",
                             ],
+                            "type": "most_fields",
                             "fuzziness": "AUTO",
                             "prefix_length": 2
                         }
