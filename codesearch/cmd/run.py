@@ -8,6 +8,7 @@ from tqdm import tqdm
 
 import codesearch.constants as consts
 from codesearch.es.client import ElasticSearchClient
+from codesearch.es.metrics.top_n import calculate_metric
 from codesearch.preproc.extract import extract_from_csv
 
 ES = ElasticSearchClient()
@@ -115,6 +116,7 @@ def search_doc(index_name: str, path_to_json_request: str, search_query: str) ->
             },
           }
         }
+        search_query: or exact query instead of path to doc
 
     Returns: request result
 
@@ -150,3 +152,40 @@ def extract(csv_path: str, storage_path: str, output_path: str, file_size_mb: in
         file_size_mb: size of each json file
     """
     extract_from_csv(csv_path, storage_path, output_path, file_size_mb)
+
+
+@cs.command()
+@click.argument("index_name")
+@click.argument("path_to_json_dataset", type=click.Path(exists=True))
+@click.argument("top_n", type=int)
+def calculate_top_n_metric(index_name: str, path_to_json_dataset: str, top_n: int) -> None:
+    """
+    A method to calculate top_n metric of index with given search request
+    Args:
+        index_name: index where we want to search
+        path_to_json_dataset: path to our validation dataset, looks like
+            [
+                {"query":  "example request", "url": "https://github.com/path/to/func#L42"},
+                {"query":  "Gurren Lagann", "url": "https://github.com/another/path#L1337"}
+            ]
+        top_n: same as top_n parameter of top_n.py/calculate_metric function
+    """
+
+    with open(path_to_json_dataset, 'r') as f:
+        data = json.load(f)
+
+    queries = [entity["query"] for entity in data]
+    answers = [entity["answer"] for entity in data]
+
+    responses = []
+    for query in queries:
+        result = ES.search_doc(index_name, {"query": query, "from": 0, "size": top_n,
+                                            "filters": {"language": ["Python"],
+                                                        "stargazers_count": {"from": 0}
+                                                        }
+                                            })
+        responses.append(result)
+
+    metric = calculate_metric(responses, answers, top_n)
+    print(f"top {top_n}: {metric}")
+    # todo how to increase the score? we can change search constructor with different params and check this metric

@@ -1,0 +1,4 @@
+[
+  {"query":  "hello, world", "url": "https://github.com/aws/aws-sam-cli/blob/520f68ca28a790568da509b60721e0e021af67e5/tests/unit/lib/utils/test_async_utils.py#L10"},
+  {"query":  "distance between two vectors", "url": "https://github.com/TheAlgorithms/Python/blob/7a9b3c7292cbd71fdc7723f449b9bbcbefbf9747/maths/euclidean_distance.py#L27"}
+]
