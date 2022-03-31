@@ -1,7 +1,10 @@
 ### Самому размечать данные не понравилось, что можно сделать:
 Берём CodeSearchNet - https://github.com/github/CodeSearchNet
 
-Смотрим, как скачать датасет для питона - https://github.com/github/CodeSearchNet/blob/master/notebooks/ExploreData.ipynb
+Смотрим, как скачать датасет для питона:
+```shell
+https://github.com/github/CodeSearchNet/blob/master/notebooks/ExploreData.ipynb
+```
 
 ```shell
 !wget https://s3.amazonaws.com/code-search-net/CodeSearchNet/v2/python.zip
