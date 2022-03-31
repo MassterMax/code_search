@@ -24,8 +24,8 @@ def dataset_to_elastic(path_to_dataset: str = PATH_TO_DATASET) -> List[Dict[str,
     print(f"extract data from: {file}")
 
     data = pd.read_json(file,
-                        orient='records',
-                        compression='gzip',
+                        orient="records",
+                        compression="gzip",
                         lines=True)
 
     values = data.values.tolist()
@@ -47,6 +47,21 @@ def prepare_entity_to_elastic(columns: List[str], entity: List[str]) -> Dict[str
         result["split_identifiers"].extend(list(parser.split(identifier)))
 
     return result
+
+
+def make_dataset_for_evaluation(path_to_dataset: str = PATH_TO_DATASET):
+    my_dataset = []
+    python_files = sorted(Path(path_to_dataset).glob("**/*.gz"))
+
+    # todo now get first file, then get all files
+    file = python_files[0]
+    data = pd.read_json(file,
+                        orient="records",
+                        compression="gzip",
+                        lines=True)[["docstring", "url"]]
+    for index, row in data.iterrows():
+        my_dataset.append({"query": row["docstring"], "location": row["url"]})
+    return my_dataset
 
 
 if __name__ == "__main__":
