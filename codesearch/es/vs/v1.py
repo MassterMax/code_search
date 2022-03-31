@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Any, Dict
 
 import codesearch.constants as consts
 from codesearch.es.es_explain import SearchResponseAnalyzer
@@ -58,3 +58,9 @@ def transform_output(search_result, user_request: str, mode=consts.REALISE_SEARC
              'score': el['_score'],
              'doc_id': el['_id'],
              } for el in search_result['hits']['hits']]
+
+
+def transform_output_light(search_result: Dict[str, Any], keep_keys=None):
+    if keep_keys is None:
+        keep_keys = ["location", "language", "function_name", "function_body"]
+    return [{key: el['_source'][key] for key in keep_keys} for el in search_result['hits']['hits']]

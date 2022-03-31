@@ -73,7 +73,7 @@ class ElasticSearchClient:
         """
         search_request = SearchConstructor.make_query(data)
         res = self.instance.search(index=index_name, body=search_request)
-        return v1.transform_output(res, search_request)
+        return v1.transform_output(res, search_request)  # todo change to v1.transform_output_light
 
     def delete(self, index_name: str):
         """
