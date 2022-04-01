@@ -1,5 +1,9 @@
 from typing import Callable, Dict, List
 
+from hyperopt import fmin, space_eval, tpe
+from hyperopt import hp
+import numpy as np
+
 from codesearch.es.client import ElasticSearchClient
 from codesearch.es.vs.v1 import transform_output_light
 
@@ -11,7 +15,7 @@ def top_n(dataset: List[Dict[str, str]],
           n: int = 10):
     score = 0.0
     for item in dataset:
-        query = item["query"]        # feature
+        query = item["query"]  # feature
         location = item["location"]  # target
 
         result = client.instance.search(index=index_name, body=search_query_func(query))
@@ -63,3 +67,23 @@ def make_search_query_func(identifiers_weight: int = 1,
         "from": start,
         "size": size
     }
+
+
+def fake_top_n(dataset: List[Dict[str, str]],
+               search_query_func: Callable[[str], Dict],
+               client: ElasticSearchClient,
+               index_name: str,
+               n: int = 10):
+    pass
+
+
+def make_space():
+    space = {
+        "identifiers_weight": hp.choice("identifiers_weight", np.arange(0, 10, 1, dtype=int)),
+        "type": hp.choice("type", ["most_fields", "best_fields"]),
+    }
+
+    best = fmin(fake_top_n, space, algo=tpe.suggest, max_evals=100)
+
+    print(best)
+    print(space_eval(space, best))
