@@ -1,12 +1,10 @@
 from pathlib import Path
-from pprint import pprint
+from typing import Any, Dict, Iterator, List
 
-from preprocess.mappers.utils import TokenParser
 import pandas as pd
-from typing import Any, Dict, List
+from preprocess.mappers.utils import TokenParser
 
 parser = TokenParser()
-PATH_TO_DATASET = "/mnt/c/Users/maxma/Desktop/dataset/"  # todo remove
 DATASET_TO_ELASTIC_MAPPING = {
     "code": "function_body",
     "code_tokens": "identifiers",
@@ -16,22 +14,19 @@ DATASET_TO_ELASTIC_MAPPING = {
 }
 
 
-def dataset_to_elastic(path_to_dataset: str = PATH_TO_DATASET) -> List[Dict[str, Any]]:
-    python_files = sorted(Path(path_to_dataset).glob("**/*.gz"))
+def dataset_to_elastic(path_to_dataset_folder: str) -> Iterator[Dict[str, Any]]:
+    python_files = sorted(Path(path_to_dataset_folder).glob("**/*.gz"))
 
-    # todo now get first file, then get all files
-    file = python_files[0]
-    print(f"extract data from: {file}")
+    for file in python_files:
+        print(f"extract data from: {file}")
+        data = pd.read_json(file,
+                            orient="records",
+                            compression="gzip",
+                            lines=True)
 
-    data = pd.read_json(file,
-                        orient="records",
-                        compression="gzip",
-                        lines=True)
-
-    values = data.values.tolist()
-    print(f"columns: {data.columns.tolist()}")
-
-    return [prepare_entity_to_elastic(data.columns.tolist(), value) for value in values]
+        values = data.values.tolist()
+        for value in values:
+            yield prepare_entity_to_elastic(data.columns.tolist(), value)
 
 
 def prepare_entity_to_elastic(columns: List[str], entity: List[str]) -> Dict[str, Any]:
@@ -49,21 +44,21 @@ def prepare_entity_to_elastic(columns: List[str], entity: List[str]) -> Dict[str
     return result
 
 
-def make_dataset_for_evaluation(path_to_dataset: str = PATH_TO_DATASET):
-    my_dataset = []
-    python_files = sorted(Path(path_to_dataset).glob("**/*.gz"))
+def make_dataset_for_evaluation(path_to_dataset_folder: str):
+    # works for ~ 1 min, 200 MB in RAM
+    train_dataset = []
+    test_dataset = []
+    python_files = sorted(Path(path_to_dataset_folder).glob("**/*.gz"))
 
-    # todo now get first file, then get all files
-    file = python_files[0]
-    data = pd.read_json(file,
-                        orient="records",
-                        compression="gzip",
-                        lines=True)[["docstring", "url"]]
-    for index, row in data.iterrows():
-        my_dataset.append({"query": row["docstring"], "location": row["url"]})
-    return my_dataset
+    for file in python_files:
+        data = pd.read_json(file,
+                            orient="records",
+                            compression="gzip",
+                            lines=True)[["docstring", "url"]]
+        for index, row in data.iterrows():
+            if "test" in str(file):
+                test_dataset.append({"query": row["docstring"], "location": row["url"]})
+            else:
+                train_dataset.append({"query": row["docstring"], "location": row["url"]})
 
-
-if __name__ == "__main__":
-    prepared_values = dataset_to_elastic()
-    pprint(prepared_values[:5])
+    return train_dataset, test_dataset

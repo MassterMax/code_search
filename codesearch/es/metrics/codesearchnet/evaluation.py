@@ -20,20 +20,35 @@ def top_n(dataset: List[Dict[str, str]], client: ElasticSearchClient, index_name
     return score / len(dataset)
 
 
-def map_n(dataset: List[Dict[str, str]], client: ElasticSearchClient, index_name: str, map_n: int = 10):
-    scores = []
-
-    for item in dataset:
-        query = item["query"]
-        location = item["location"]
-
-        result = client.search_doc(index_name, {"query": query, "from": 0, "size": top_n})
-        score = 0
-
-        for i, entity in enumerate(result):
-            if entity["location"] == location:
-                score = 1 / (1 + i)
-                break
-        scores.append(score)
-
-    return sum(scores) / len(scores)
+def make_search_query(query: str,
+                      identifiers_weight: int = 1,
+                      split_identifiers_weight: int = 1,
+                      function_body_weight: int = 1,
+                      docstring_weight: int = 1,
+                      location_weight: int = 1,
+                      function_name_weight: int = 1,
+                      ) -> Dict:
+    return {
+            "query": {
+                "bool": {
+                    "must": {
+                        "multi_match": {
+                            "query": query,
+                            "fields": [
+                                # exact occurrence
+                                f"identifiers^{identifiers_weight}",
+                                f"split_identifiers^{split_identifiers_weight}",
+                                f"function_body^{function_body_weight}",
+                                # meaning
+                                f"docstring^{docstring_weight}",
+                                f"location^{location_weight}"
+                                f"function_name^{function_name_weight}",
+                            ],
+                            "type": "most_fields",
+                            "fuzziness": "AUTO",
+                            "prefix_length": 2
+                        }
+                    }
+                }
+            }
+        }
