@@ -69,21 +69,22 @@ def make_search_query_func(identifiers_weight: int = 1,
     }
 
 
-def fake_top_n(dataset: List[Dict[str, str]],
-               search_query_func: Callable[[str], Dict],
-               client: ElasticSearchClient,
-               index_name: str,
-               n: int = 10):
-    pass
+def calculate(dataset: List[Dict[str, str]],
+              client: ElasticSearchClient,
+              index_name: str,
+              n: int = 10):
+    def objective(args) -> float:
+        search_query_func = make_search_query_func()  # todo add args
 
+        # we want to maximize top_n, or minimize -top_n
+        return -top_n(dataset, search_query_func, client, index_name, n)
 
-def make_space():
     space = {
         "identifiers_weight": hp.choice("identifiers_weight", np.arange(0, 10, 1, dtype=int)),
         "type": hp.choice("type", ["most_fields", "best_fields"]),
     }
 
-    best = fmin(fake_top_n, space, algo=tpe.suggest, max_evals=100)
+    best = fmin(objective, space, algo=tpe.suggest, max_evals=100)
 
     print(best)
     print(space_eval(space, best))
