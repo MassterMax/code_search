@@ -84,19 +84,20 @@ def find_best_params(dataset: List[Dict[str, str]],
         # we want to maximize top_n, or minimize -top_n
         return -top_n(dataset, search_query_func, client, index_name, n, query_max_length)
 
+    # we should force docstring weight to be zero!!!
     space = {
         "identifiers_weight": hp.choice("identifiers_weight", np.arange(0, 10, 1, dtype=int)),
         "split_identifiers_weight": hp.choice("identifiers_weight", np.arange(0, 10, 1, dtype=int)),
         "function_body_weight": hp.choice("identifiers_weight", np.arange(0, 10, 1, dtype=int)),
-        "docstring_weight": hp.choice("identifiers_weight", np.arange(0, 10, 1, dtype=int)),
+        "docstring_weight": hp.choice("identifiers_weight", [0]),
         "location_weight": hp.choice("identifiers_weight", np.arange(0, 10, 1, dtype=int)),
         "function_name_weight": hp.choice("identifiers_weight", np.arange(0, 10, 1, dtype=int)),
         "prefix_length": hp.choice("identifiers_weight", np.arange(0, 10, 1, dtype=int)),
         "match_type": hp.choice("type", ["most_fields", "best_fields"]),
     }
 
-    trimmed_dataset = []
     best = fmin(objective, space, algo=tpe.suggest, max_evals=100)
 
     print(best)
     print(space_eval(space, best))
+    print(f"top_{n} = {-objective(space_eval(space, best))}")
