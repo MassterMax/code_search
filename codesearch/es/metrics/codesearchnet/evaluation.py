@@ -86,13 +86,13 @@ def find_best_params(dataset: List[Dict[str, str]],
 
     # we should force docstring weight to be zero!!!
     space = {
-        "identifiers_weight": hp.choice("identifiers_weight", np.arange(0, 10, 1, dtype=int)),
-        "split_identifiers_weight": hp.choice("identifiers_weight", np.arange(0, 10, 1, dtype=int)),
-        "function_body_weight": hp.choice("identifiers_weight", np.arange(0, 10, 1, dtype=int)),
+        "identifiers_weight": hp.choice("identifiers_weight", np.arange(0, 1, 1, dtype=int)),
+        "split_identifiers_weight": hp.choice("identifiers_weight", np.arange(0, 1, 1, dtype=int)),
+        "function_body_weight": hp.choice("identifiers_weight", np.arange(0, 1, 1, dtype=int)),
         "docstring_weight": hp.choice("identifiers_weight", [0]),
-        "location_weight": hp.choice("identifiers_weight", np.arange(0, 10, 1, dtype=int)),
-        "function_name_weight": hp.choice("identifiers_weight", np.arange(0, 10, 1, dtype=int)),
-        "prefix_length": hp.choice("identifiers_weight", np.arange(0, 10, 1, dtype=int)),
+        "location_weight": hp.choice("identifiers_weight", np.arange(0, 1, 1, dtype=int)),
+        "function_name_weight": hp.choice("identifiers_weight", np.arange(0, 1, 1, dtype=int)),
+        "prefix_length": hp.choice("identifiers_weight", np.arange(0, 1, 1, dtype=int)),
         "match_type": hp.choice("type", ["most_fields", "best_fields"]),
     }
 
