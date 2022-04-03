@@ -5,6 +5,7 @@ from hyperopt import hp
 import numpy as np
 
 from codesearch.es.client import ElasticSearchClient
+from codesearch.es.metrics.codesearchnet.utils import timer
 from codesearch.es.vs.v1 import transform_output_light
 
 
@@ -12,10 +13,11 @@ def top_n(dataset: List[Dict[str, str]],
           search_query_func: Callable[[str], Dict],
           client: ElasticSearchClient,
           index_name: str,
-          n: int = 10):
+          n: int = 5,
+          query_max_length: int = 30):
     score = 0.0
     for item in dataset:
-        query = item["query"]  # feature
+        query = item["query"][:query_max_length]  # feature
         location = item["location"]  # target
 
         result = client.instance.search(index=index_name, body=search_query_func(query))
@@ -38,6 +40,7 @@ def make_search_query_func(identifiers_weight: int = 1,
                            location_weight: int = 1,
                            function_name_weight: int = 1,
                            prefix_length: int = 2,
+                           match_type: str = "best_fields",
                            start: int = 0,
                            size: int = 5
                            ) -> Callable[[str], Dict]:
@@ -57,7 +60,7 @@ def make_search_query_func(identifiers_weight: int = 1,
                             f"location^{location_weight}"
                             f"function_name^{function_name_weight}",
                         ],
-                        "type": "most_fields",
+                        "type": match_type,
                         "fuzziness": "AUTO",
                         "prefix_length": prefix_length
                     }
@@ -69,21 +72,30 @@ def make_search_query_func(identifiers_weight: int = 1,
     }
 
 
-def calculate(dataset: List[Dict[str, str]],
-              client: ElasticSearchClient,
-              index_name: str,
-              n: int = 10):
+@timer
+def find_best_params(dataset: List[Dict[str, str]],
+                     client: ElasticSearchClient,
+                     index_name: str,
+                     n: int = 5,
+                     query_max_length: int = 30):
     def objective(args) -> float:
-        search_query_func = make_search_query_func()  # todo add args
-
+        args["size"] = n
+        search_query_func = make_search_query_func(**args)
         # we want to maximize top_n, or minimize -top_n
-        return -top_n(dataset, search_query_func, client, index_name, n)
+        return -top_n(dataset, search_query_func, client, index_name, n, query_max_length)
 
     space = {
         "identifiers_weight": hp.choice("identifiers_weight", np.arange(0, 10, 1, dtype=int)),
-        "type": hp.choice("type", ["most_fields", "best_fields"]),
+        "split_identifiers_weight": hp.choice("identifiers_weight", np.arange(0, 10, 1, dtype=int)),
+        "function_body_weight": hp.choice("identifiers_weight", np.arange(0, 10, 1, dtype=int)),
+        "docstring_weight": hp.choice("identifiers_weight", np.arange(0, 10, 1, dtype=int)),
+        "location_weight": hp.choice("identifiers_weight", np.arange(0, 10, 1, dtype=int)),
+        "function_name_weight": hp.choice("identifiers_weight", np.arange(0, 10, 1, dtype=int)),
+        "prefix_length": hp.choice("identifiers_weight", np.arange(0, 10, 1, dtype=int)),
+        "match_type": hp.choice("type", ["most_fields", "best_fields"]),
     }
 
+    trimmed_dataset = []
     best = fmin(objective, space, algo=tpe.suggest, max_evals=100)
 
     print(best)

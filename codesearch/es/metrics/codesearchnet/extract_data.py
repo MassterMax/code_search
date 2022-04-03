@@ -1,4 +1,5 @@
 from pathlib import Path
+from pprint import pprint
 from typing import Any, Dict, Iterator, List
 
 import pandas as pd
@@ -40,6 +41,9 @@ def prepare_entity_to_elastic(columns: List[str], entity: List[str]) -> Dict[str
     result["split_identifiers"] = []
     for identifier in result["identifiers"]:
         result["split_identifiers"].extend(list(parser.split(identifier)))
+
+    # we should remove docstring from function body
+    result["function_body"] = result.get("function_body", "").replace(result["docstring"], "")
 
     return result
 
