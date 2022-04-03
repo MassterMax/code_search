@@ -1,4 +1,5 @@
 import logging
+from pprint import pprint
 from typing import Callable, Dict, List
 
 from hyperopt import fmin, space_eval, tpe
@@ -26,7 +27,9 @@ def top_n(dataset: List[Dict[str, str]],
         query = item["query"][:query_max_length]  # feature
         location = item["location"]  # target
 
-        result = client.instance.search(index=index_name, body=search_query_func(query))
+        body = search_query_func(query)
+        pprint(body)
+        result = client.instance.search(index=index_name, body=body)
         result = transform_output_light(result)
 
         for i, entity in enumerate(result):
