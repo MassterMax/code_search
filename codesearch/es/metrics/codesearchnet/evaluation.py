@@ -21,7 +21,7 @@ def top_n(dataset: List[Dict[str, str]],
           query_max_length: int = 30):
     logger.info("evaluation started!")
     score = 0.0
-    
+
     for item in tqdm(dataset):
         query = item["query"][:query_max_length]  # feature
         location = item["location"]  # target
@@ -102,7 +102,7 @@ def find_best_params(dataset: List[Dict[str, str]],
         "match_type": hp.choice("type", ["most_fields", "best_fields"]),
     }
 
-    best = fmin(objective, space, algo=tpe.suggest, max_evals=100)
+    best = fmin(objective, space, algo=tpe.suggest, max_evals=1)
 
     print(best)
     print(space_eval(space, best))
