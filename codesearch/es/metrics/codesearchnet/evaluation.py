@@ -28,7 +28,8 @@ def top_n(dataset: List[Dict[str, str]],
         location = item["location"]  # target
 
         body = search_query_func(query)
-        pprint(body)
+        print(body)
+        print(type(body))
         result = client.instance.search(index=index_name, body=body)
         result = transform_output_light(result)
 
