@@ -9,7 +9,7 @@ https://github.com/github/CodeSearchNet/blob/master/notebooks/ExploreData.ipynb
 ```
 
 ```shell
-!wget https://s3.amazonaws.com/code-search-net/CodeSearchNet/v2/python.zip
+wget https://s3.amazonaws.com/code-search-net/CodeSearchNet/v2/python.zip
 ```
 
 
