@@ -1,3 +1,4 @@
+from functools import wraps
 import logging
 import time
 
@@ -5,6 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 def timer(func):
+    @wraps(func)
     def wrapper():
         start = time.time()
         func()
