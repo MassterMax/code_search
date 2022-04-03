@@ -1,12 +1,16 @@
+import logging
 from typing import Callable, Dict, List
 
 from hyperopt import fmin, space_eval, tpe
 from hyperopt import hp
 import numpy as np
+from tqdm import tqdm
 
 from codesearch.es.client import ElasticSearchClient
 from codesearch.es.metrics.codesearchnet.utils import timer
 from codesearch.es.vs.v1 import transform_output_light
+
+logger = logging.getLogger(__name__)
 
 
 def top_n(dataset: List[Dict[str, str]],
@@ -15,8 +19,10 @@ def top_n(dataset: List[Dict[str, str]],
           index_name: str,
           n: int = 5,
           query_max_length: int = 30):
+    logger.info("evaluation started!")
     score = 0.0
-    for item in dataset:
+    
+    for item in tqdm(dataset):
         query = item["query"][:query_max_length]  # feature
         location = item["location"]  # target
 
@@ -72,7 +78,7 @@ def make_search_query_func(identifiers_weight: int = 1,
     }
 
 
-@timer
+# @timer
 def find_best_params(dataset: List[Dict[str, str]],
                      client: ElasticSearchClient,
                      index_name: str,
