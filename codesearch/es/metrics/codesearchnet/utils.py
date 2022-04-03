@@ -7,9 +7,9 @@ logger = logging.getLogger(__name__)
 
 def timer(func):
     @wraps(func)
-    def wrapper():
+    def wrapper(*args, **kwargs):
         start = time.time()
-        func()
-        logger.info(f"Execution time: {time.time() - start}s")
+        func(*args, **kwargs)
+        logger.info(f"total execution time: {time.time() - start}s")
 
     return wrapper

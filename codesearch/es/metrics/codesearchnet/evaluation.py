@@ -78,7 +78,7 @@ def make_search_query_func(identifiers_weight: int = 1,
     }
 
 
-# @timer
+@timer
 def find_best_params(dataset: List[Dict[str, str]],
                      client: ElasticSearchClient,
                      index_name: str,
@@ -93,13 +93,13 @@ def find_best_params(dataset: List[Dict[str, str]],
     # we should force docstring weight to be zero!!!
     space = {
         "identifiers_weight": hp.choice("identifiers_weight", np.arange(0, 1, 1, dtype=int)),
-        "split_identifiers_weight": hp.choice("identifiers_weight", np.arange(0, 1, 1, dtype=int)),
-        "function_body_weight": hp.choice("identifiers_weight", np.arange(0, 1, 1, dtype=int)),
-        "docstring_weight": hp.choice("identifiers_weight", [0]),
-        "location_weight": hp.choice("identifiers_weight", np.arange(0, 1, 1, dtype=int)),
-        "function_name_weight": hp.choice("identifiers_weight", np.arange(0, 1, 1, dtype=int)),
-        "prefix_length": hp.choice("identifiers_weight", np.arange(0, 1, 1, dtype=int)),
-        "match_type": hp.choice("type", ["most_fields", "best_fields"]),
+        "split_identifiers_weight": hp.choice("split_identifiers_weight", np.arange(0, 1, 1, dtype=int)),
+        "function_body_weight": hp.choice("function_body_weight", np.arange(0, 1, 1, dtype=int)),
+        "docstring_weight": hp.choice("docstring_weight", [0]),
+        "location_weight": hp.choice("location_weight", np.arange(0, 1, 1, dtype=int)),
+        "function_name_weight": hp.choice("function_name_weight", np.arange(0, 1, 1, dtype=int)),
+        "prefix_length": hp.choice("prefix_length", np.arange(0, 1, 1, dtype=int)),
+        "match_type": hp.choice("match_type", ["most_fields", "best_fields"]),
     }
 
     best = fmin(objective, space, algo=tpe.suggest, max_evals=1)
