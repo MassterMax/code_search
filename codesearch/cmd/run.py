@@ -7,7 +7,8 @@ from tqdm import tqdm
 
 import codesearch.constants as consts
 from codesearch.es.client import ElasticSearchClient
-from codesearch.es.metrics.codesearchnet.extract_data import dataset_to_elastic
+from codesearch.es.metrics.codesearchnet.evaluation import find_best_params
+from codesearch.es.metrics.codesearchnet.extract_data import dataset_to_elastic, make_dataset_for_evaluation
 from codesearch.preproc.extract import extract_from_csv
 
 ES = ElasticSearchClient()
@@ -160,3 +161,12 @@ def fill_train_dataset(index_name: str, path_to_dataset_folder: str):
     data = dataset_to_elastic(path_to_dataset_folder)
     for entity in tqdm(data):
         ES.instance.index(index=index_name, document=entity)
+
+
+@cs.command()
+@click.argument("index_name")
+@click.argument("path_to_dataset_folder")
+def evaluate_index(index_name: str, path_to_dataset_folder: str):
+    train_dataset, test_dataset = make_dataset_for_evaluation(path_to_dataset_folder)
+    find_best_params(train_dataset, ES, index_name)
+    find_best_params(test_dataset, ES, index_name)
