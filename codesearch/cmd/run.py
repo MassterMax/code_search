@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 import codesearch.constants as consts
 from codesearch.es.client import ElasticSearchClient
-from codesearch.es.metrics.codesearchnet.evaluation import find_best_params
+from codesearch.es.metrics.codesearchnet.evaluation import find_best_params, make_search_query_func, top_n
 from codesearch.es.metrics.codesearchnet.extract_data import dataset_to_elastic, make_dataset_for_evaluation
 from codesearch.preproc.extract import extract_from_csv
 
@@ -165,8 +165,33 @@ def fill_train_dataset(index_name: str, path_to_dataset_folder: str):
 
 @cs.command()
 @click.argument("index_name")
-@click.argument("path_to_dataset_folder")
-def evaluate_index(index_name: str, path_to_dataset_folder: str):
+@click.argument("path_to_dataset_folder", type=click.Path(exists=True))
+@click.argument("path_to_grid", type=click.Path(exists=True))
+@click.option('--train_len', '-l', default=1000)
+@click.option('--n', '-n', default=10)
+@click.option('--query_max_length', '-q', default=30)
+@click.option('--max_evals', '-e', default=30)
+def evaluate_index(index_name: str,
+                   path_to_dataset_folder: str,
+                   path_to_grid: str,
+                   train_len: int = 1000,
+                   n: int = 10,
+                   query_max_length: int = 30,
+                   max_evals: int = 50):
     train_dataset, test_dataset = make_dataset_for_evaluation(path_to_dataset_folder)
-    find_best_params(train_dataset, ES, index_name)
-    find_best_params(test_dataset, ES, index_name)
+    reduce_coefficient = min(train_len / len(train_dataset), 1)
+    train_dataset_len = int(len(train_dataset) * reduce_coefficient)
+    test_dataset_len = int(len(test_dataset) * reduce_coefficient)
+
+    with open(path_to_grid, "r") as f:
+        grid = json.load(f)
+
+    train_score, params = find_best_params(train_dataset[:train_dataset_len], ES, index_name, grid, n, query_max_length, max_evals)
+
+    print("params: ", params)
+    print(f"train top_{n} = {train_score}")
+
+    params["size"] = n
+    score = top_n(test_dataset[:test_dataset_len], make_search_query_func(**params), ES, index_name, n,
+                  query_max_length)
+    print(f"test top_{n}={score}")

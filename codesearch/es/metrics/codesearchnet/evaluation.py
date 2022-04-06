@@ -1,7 +1,7 @@
 import logging
-from pprint import pprint
-from typing import Callable, Dict, List
+from typing import Callable, Dict, List, Union
 
+import elasticsearch
 from hyperopt import fmin, space_eval, tpe
 from hyperopt import hp
 import numpy as np
@@ -22,16 +22,20 @@ def top_n(dataset: List[Dict[str, str]],
           query_max_length: int = 30):
     logger.info("evaluation started!")
     score = 0.0
+    cnt = len(dataset)
 
     for item in tqdm(dataset):
         query = item["query"][:query_max_length]  # feature
         location = item["location"]  # target
 
-        body = search_query_func(query)
-        print(body)
-        print(type(body))
-        result = client.instance.search(index=index_name, body=body)
-        result = transform_output_light(result)
+        try:
+            result = client.instance.search(index=index_name, body=search_query_func(query))
+        except elasticsearch.exceptions.TransportError as e:
+            logger.error(e)
+            cnt -= 1
+            continue
+
+        result = transform_output_light(result, keep_keys=["location"])
 
         for i, entity in enumerate(result):
             if i == n:
@@ -40,7 +44,7 @@ def top_n(dataset: List[Dict[str, str]],
                 score += 1
                 break
 
-    return score / len(dataset)
+    return score / cnt
 
 
 def make_search_query_func(identifiers_weight: int = 1,
@@ -67,8 +71,8 @@ def make_search_query_func(identifiers_weight: int = 1,
                             f"function_body^{function_body_weight}",
                             # meaning
                             f"docstring^{docstring_weight}",
-                            f"location^{location_weight}"
-                            f"function_name^{function_name_weight}",
+                            f"location^{location_weight}",
+                            f"function_name^{function_name_weight}"
                         ],
                         "type": match_type,
                         "fuzziness": "AUTO",
@@ -86,28 +90,36 @@ def make_search_query_func(identifiers_weight: int = 1,
 def find_best_params(dataset: List[Dict[str, str]],
                      client: ElasticSearchClient,
                      index_name: str,
+                     grid: Dict[str, Union[Dict, List]],
                      n: int = 5,
-                     query_max_length: int = 30):
+                     query_max_length: int = 30,
+                     max_evals: int = 50):
+    best_score = 0.0
+
     def objective(args) -> float:
+        nonlocal best_score
         args["size"] = n
         search_query_func = make_search_query_func(**args)
+
         # we want to maximize top_n, or minimize -top_n
-        return -top_n(dataset, search_query_func, client, index_name, n, query_max_length)
+        score = top_n(dataset, search_query_func, client, index_name, n, query_max_length)
+        best_score = max(best_score, score)
+        return -score
 
     # we should force docstring weight to be zero!!!
-    space = {
-        "identifiers_weight": hp.choice("identifiers_weight", np.arange(0, 1, 1, dtype=int)),
-        "split_identifiers_weight": hp.choice("split_identifiers_weight", np.arange(0, 1, 1, dtype=int)),
-        "function_body_weight": hp.choice("function_body_weight", np.arange(0, 1, 1, dtype=int)),
-        "docstring_weight": hp.choice("docstring_weight", [0]),
-        "location_weight": hp.choice("location_weight", np.arange(0, 1, 1, dtype=int)),
-        "function_name_weight": hp.choice("function_name_weight", np.arange(0, 1, 1, dtype=int)),
-        "prefix_length": hp.choice("prefix_length", np.arange(0, 1, 1, dtype=int)),
-        "match_type": hp.choice("match_type", ["most_fields", "best_fields"]),
-    }
+    space = {}
+    # max_evals = 1
+    for key in grid:
+        value = grid[key]
+        if isinstance(value, Dict):
+            space[key] = hp.choice(key, np.arange(value["from"], value["to"], value["step"], dtype=int))
+            # max_evals *= (abs(value["from"] - value["to"]) // value["step"])
+        elif isinstance(value, List):
+            space[key] = hp.choice(key, value)
+            # max_evals *= len(value)
+        else:
+            raise ValueError(f"Unknown grid parameter: {key}:{value}")
 
-    best = fmin(objective, space, algo=tpe.suggest, max_evals=1)
+    best = fmin(objective, space, algo=tpe.suggest, max_evals=max_evals)
 
-    print(best)
-    print(space_eval(space, best))
-    print(f"top_{n} = {-objective(space_eval(space, best))}")
+    return best_score, space_eval(space, best)
