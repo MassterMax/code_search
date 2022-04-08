@@ -1,8 +1,0 @@
-[
-  {"query":  "hello, world", "url": "https://github.com/aws/aws-sam-cli/blob/520f68ca28a790568da509b60721e0e021af67e5/tests/unit/lib/utils/test_async_utils.py#L10"},
-  {"query":  "distance between two vectors", "url": "https://github.com/TheAlgorithms/Python/blob/7a9b3c7292cbd71fdc7723f449b9bbcbefbf9747/maths/euclidean_distance.py#L27"},
-  {"query":  "make 64-json from data", "url": "https://github.com/google/clusterfuzz/blob/6e04a5d8ae53914987f633e67e514932fb239a19/src/appengine/handlers/base_handler.py#L93"},
-  {"query":  "cut address to gmail", "url": "https://github.com/google/clusterfuzz/blob/6e04a5d8ae53914987f633e67e514932fb239a19/src/appengine/handlers/cron/project_setup.py#L311"},
-  {"query":  "strip html space from string", "url": "https://github.com/Kozea/WeasyPrint/blob/82e15f6ce1cb1fab67370d2669baaca0169e0553/weasyprint/html.py#L342"},
-  {"query":  "get html meta data from object", "url": "https://github.com/Kozea/WeasyPrint/blob/82e15f6ce1cb1fab67370d2669baaca0169e0553/weasyprint/html.py#L288"}
-]

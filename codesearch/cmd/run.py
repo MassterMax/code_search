@@ -7,8 +7,8 @@ from tqdm import tqdm
 
 import codesearch.constants as consts
 from codesearch.es.client import ElasticSearchClient
-from codesearch.es.metrics.codesearchnet.evaluation import find_best_params, make_search_query_func, top_n
-from codesearch.es.metrics.codesearchnet.extract_data import dataset_to_elastic, make_dataset_for_evaluation
+from codesearch.es.metrics.evaluation import find_best_params, make_search_query_func, top_n
+from codesearch.es.metrics.extract_data import dataset_to_elastic, make_dataset_for_evaluation
 from codesearch.preproc.extract import extract_from_csv
 
 ES = ElasticSearchClient()
