@@ -180,22 +180,15 @@ def evaluate_index(index_name: str,
                    max_evals: int = 50):
     train_dataset, test_dataset = make_dataset_for_evaluation(path_to_dataset_folder)
 
-    print(len(train_dataset))
-    print(len(test_dataset))
-
-    reduce_coefficient = min(train_len / len(train_dataset), 1)
-    train_dataset_len = int(len(train_dataset) * reduce_coefficient)
-    test_dataset_len = int(len(test_dataset) * reduce_coefficient)
-
     with open(path_to_grid, "r") as f:
         grid = json.load(f)
 
-    train_score, params = find_best_params(train_dataset[:train_dataset_len], ES, index_name, grid, n, query_max_length, max_evals)
+    train_score, params = find_best_params(train_dataset, train_len, ES, index_name, grid, n, query_max_length, max_evals)
 
     print("params: ", params)
     print(f"train top_{n} = {train_score}")
 
     params["size"] = n
-    score = top_n(test_dataset[:test_dataset_len], make_search_query_func(**params), ES, index_name, n,
+    score = top_n(test_dataset, make_search_query_func(**params), ES, index_name, n,
                   query_max_length)
     print(f"test top_{n}={score}")

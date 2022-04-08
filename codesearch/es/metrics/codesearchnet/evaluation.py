@@ -1,4 +1,5 @@
 import logging
+import random
 from typing import Callable, Dict, List, Union
 
 import elasticsearch
@@ -44,7 +45,7 @@ def top_n(dataset: List[Dict[str, str]],
                 score += 1
                 break
 
-    return score / cnt
+    return 0 if cnt == 0 else score / cnt
 
 
 def make_search_query_func(identifiers_weight: int = 1,
@@ -88,6 +89,7 @@ def make_search_query_func(identifiers_weight: int = 1,
 
 @timer
 def find_best_params(dataset: List[Dict[str, str]],
+                     train_dataset_length: int,
                      client: ElasticSearchClient,
                      index_name: str,
                      grid: Dict[str, Union[Dict, List]],
@@ -102,7 +104,8 @@ def find_best_params(dataset: List[Dict[str, str]],
         search_query_func = make_search_query_func(**args)
 
         # we want to maximize top_n, or minimize -top_n
-        score = top_n(dataset, search_query_func, client, index_name, n, query_max_length)
+        score = top_n(random.sample(dataset, train_dataset_length), search_query_func, client, index_name, n,
+                      query_max_length)
         best_score = max(best_score, score)
         return -score
 
