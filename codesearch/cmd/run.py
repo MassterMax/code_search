@@ -179,6 +179,10 @@ def evaluate_index(index_name: str,
                    query_max_length: int = 30,
                    max_evals: int = 50):
     train_dataset, test_dataset = make_dataset_for_evaluation(path_to_dataset_folder)
+
+    print(len(train_dataset))
+    print(len(test_dataset))
+
     reduce_coefficient = min(train_len / len(train_dataset), 1)
     train_dataset_len = int(len(train_dataset) * reduce_coefficient)
     test_dataset_len = int(len(test_dataset) * reduce_coefficient)
