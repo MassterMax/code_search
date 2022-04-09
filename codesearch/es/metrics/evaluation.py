@@ -139,5 +139,5 @@ def find_best_params(dataset: List[Dict[str, str]],
     best = fmin(objective, space, algo=tpe.suggest, max_evals=max_evals)
 
     print(f"TOTAL TIME OF CORRUPTING {change_time}s, or {change_time/60}m")
-
+    print(space_eval(space, best))
     return best_score, space_eval(space, best)
