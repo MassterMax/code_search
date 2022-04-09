@@ -116,6 +116,7 @@ def find_best_params(dataset: List[Dict[str, str]],
             for i, el in enumerate(trimmed_dataset):
                 trimmed_dataset[i]["query"] = corrupt_text(el["query"], synonyms, corrupt_probability)
             change_time += (time.time() - st)
+            print("add some time")
 
         # we want to maximize top_n, or minimize -top_n
         score = top_n(trimmed_dataset, search_query_func, client, index_name, n,
