@@ -7,6 +7,7 @@ from tqdm import tqdm
 
 import codesearch.constants as consts
 from codesearch.es.client import ElasticSearchClient
+from codesearch.es.metrics.create_noise import get_most_common_synonyms
 from codesearch.es.metrics.evaluation import find_best_params, make_search_query_func, top_n
 from codesearch.es.metrics.extract_data import dataset_to_elastic, make_dataset_for_evaluation
 from codesearch.preproc.extract import extract_from_csv
@@ -171,17 +172,22 @@ def fill_train_dataset(index_name: str, path_to_dataset_folder: str):
 @click.option('--n', '-n', default=10)
 @click.option('--query_max_length', '-q', default=30)
 @click.option('--max_evals', '-e', default=30)
+@click.option('--corrupt_probability', '-c', default=0)
 def evaluate_index(index_name: str,
                    path_to_dataset_folder: str,
                    path_to_grid: str,
                    train_len: int = 1000,
                    n: int = 10,
                    query_max_length: int = 30,
-                   max_evals: int = 50):
+                   max_evals: int = 50,
+                   corrupt_probability: float = 0):
     train_dataset, test_dataset = make_dataset_for_evaluation(path_to_dataset_folder)
 
     with open(path_to_grid, "r") as f:
         grid = json.load(f)
+
+    if corrupt_probability > 0:
+        synonyms = get_most_common_synonyms([el["query"] for el in train_dataset], 100)  # todo make 100 as a parameter
 
     train_score, params = find_best_params(train_dataset, train_len, ES, index_name, grid, n, query_max_length, max_evals)
 
