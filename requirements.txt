@@ -15,3 +15,4 @@ typing~=3.7.4.3
 numpy~=1.21.5
 hyperopt~=0.2.7
 preprocess~=0.6.4
+nltk~=3.7
