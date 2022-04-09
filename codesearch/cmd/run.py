@@ -172,7 +172,7 @@ def fill_train_dataset(index_name: str, path_to_dataset_folder: str):
 @click.option('--n', '-n', default=10)
 @click.option('--query_max_length', '-q', default=30)
 @click.option('--max_evals', '-e', default=30)
-@click.option('--corrupt_probability', '-c', default=0)
+@click.option('--corrupt_probability', '-c', default=0, type=float)
 def evaluate_index(index_name: str,
                    path_to_dataset_folder: str,
                    path_to_grid: str,
