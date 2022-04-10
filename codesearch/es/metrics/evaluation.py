@@ -104,6 +104,9 @@ def find_best_params(dataset: List[Dict[str, str]],
 
     change_time = 0
 
+    print(synonyms)
+    print(corrupt_probability)
+
     def objective(args) -> float:
         nonlocal best_score, change_time
         args["size"] = n
