@@ -189,7 +189,8 @@ def evaluate_index(index_name: str,
     if corrupt_probability > 0:
         synonyms = get_most_common_synonyms([el["query"] for el in train_dataset], 100)  # todo make 100 as a parameter
 
-    train_score, params = find_best_params(train_dataset, train_len, ES, index_name, grid, n, query_max_length, max_evals)
+    train_score, params = find_best_params(train_dataset, train_len, ES, index_name, grid, n, query_max_length,
+                                           max_evals, synonyms, corrupt_probability)
 
     print("params: ", params)
     print(f"train top_{n} = {train_score}")
