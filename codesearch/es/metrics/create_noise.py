@@ -12,7 +12,6 @@ nltk.download('wordnet')
 from nltk.corpus import wordnet
 
 
-@timer
 def generate_synonyms(word: str):
     synonyms = set()
     for syn in wordnet.synsets(word):
