@@ -5,8 +5,6 @@ from typing import Dict, List
 import nltk
 import numpy as np
 
-from codesearch.es.metrics.utils import timer
-
 nltk.download('omw-1.4')
 nltk.download('wordnet')
 from nltk.corpus import wordnet
