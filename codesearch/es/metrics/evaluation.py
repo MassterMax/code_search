@@ -102,24 +102,16 @@ def find_best_params(dataset: List[Dict[str, str]],
                      corrupt_probability: float = 0):
     best_score = 0.0
 
-    change_time = 0
-
-    print(synonyms)
-    print(corrupt_probability)
-
     def objective(args) -> float:
-        nonlocal best_score, change_time
+        nonlocal best_score
         args["size"] = n
         search_query_func = make_search_query_func(**args)
 
         trimmed_dataset = random.sample(dataset, train_dataset_length)
 
         if synonyms is not None and corrupt_probability != 0:
-            st = time.time()
             for i, el in enumerate(trimmed_dataset):
                 trimmed_dataset[i]["query"] = corrupt_text(el["query"], synonyms, corrupt_probability)
-            change_time += (time.time() - st)
-            print("add some time")
 
         # we want to maximize top_n, or minimize -top_n
         score = top_n(trimmed_dataset, search_query_func, client, index_name, n,
@@ -141,6 +133,4 @@ def find_best_params(dataset: List[Dict[str, str]],
 
     best = fmin(objective, space, algo=tpe.suggest, max_evals=max_evals)
 
-    print(f"TOTAL TIME OF CORRUPTING {change_time}s, or {change_time/60}m")
-    print(space_eval(space, best))
     return best_score, space_eval(space, best)
