@@ -27,7 +27,7 @@ def top_n(dataset: List[Dict[str, str]],
     score = 0.0
     cnt = len(dataset)
 
-    for item in tqdm(dataset):
+    for item in tqdm(dataset, miniters=100):
         query = item["query"][:query_max_length]  # feature
         location = item["location"]  # target
 
