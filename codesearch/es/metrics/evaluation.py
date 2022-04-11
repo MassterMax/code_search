@@ -31,8 +31,6 @@ def top_n(dataset: List[Dict[str, str]],
         query = item["query"][:query_max_length]  # feature
         location = item["location"]  # target
 
-        print(query)
-
         try:
             result = client.instance.search(index=index_name, body=search_query_func(query))
         except elasticsearch.exceptions.TransportError as e:
