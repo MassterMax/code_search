@@ -1,6 +1,5 @@
 import logging
 import random
-import time
 from typing import Callable, Dict, List, Union
 
 import elasticsearch
@@ -21,14 +20,13 @@ def top_n(dataset: List[Dict[str, str]],
           search_query_func: Callable[[str], Dict],
           client: ElasticSearchClient,
           index_name: str,
-          n: int = 5,
-          query_max_length: int = 30):
+          n: int = 5):
     logger.info("evaluation started!")
     score = 0.0
     cnt = len(dataset)
 
     for item in tqdm(dataset, miniters=100):
-        query = item["query"][:query_max_length]  # feature
+        query = item["query"]  # feature
         location = item["location"]  # target
 
         try:
@@ -113,14 +111,14 @@ def find_best_params(dataset: List[Dict[str, str]],
 
         if synonyms is not None and corrupt_probability != 0:
             trimmed_dataset = [
-                {"query": corrupt_text(el["query"], synonyms, corrupt_probability), "location": el["location"]}
+                {"query": corrupt_text(el["query"], synonyms, corrupt_probability)[:query_max_length],
+                 "location": el["location"]}
                 for el in trimmed_dataset]
             # for i, el in enumerate(trimmed_dataset):
             #     trimmed_dataset[i]["query"] = corrupt_text(el["query"], synonyms, corrupt_probability)
 
         # we want to maximize top_n, or minimize -top_n
-        score = top_n(trimmed_dataset, search_query_func, client, index_name, n,
-                      query_max_length)
+        score = top_n(trimmed_dataset, search_query_func, client, index_name, n)
         best_score = max(best_score, score)
         return -score
 
