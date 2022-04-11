@@ -11,7 +11,7 @@ from tqdm import tqdm
 
 from codesearch.es.client import ElasticSearchClient
 from codesearch.es.metrics.create_noise import corrupt_text
-from codesearch.es.metrics.utils import timer
+from codesearch.es.metrics.utils import free_memory_logging, timer
 from codesearch.es.vs.v1 import transform_output_light
 
 logger = logging.getLogger(__name__)
@@ -102,6 +102,7 @@ def find_best_params(dataset: List[Dict[str, str]],
                      corrupt_probability: float = 0):
     best_score = 0.0
 
+    @free_memory_logging("./logging")
     def objective(args) -> float:
         nonlocal best_score
         args["size"] = n
