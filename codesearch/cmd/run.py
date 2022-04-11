@@ -199,7 +199,7 @@ def evaluate_index(index_name: str,
 
     params["size"] = n
 
-    for i in enumerate(test_dataset):
+    for i, el in enumerate(test_dataset):
         test_dataset[i]["query"] = test_dataset[i]["query"][:query_max_length]
 
     score = top_n(test_dataset, make_search_query_func(**params), ES, index_name, n)
