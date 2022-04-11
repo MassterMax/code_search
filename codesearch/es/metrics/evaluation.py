@@ -107,11 +107,15 @@ def find_best_params(dataset: List[Dict[str, str]],
         args["size"] = n
         search_query_func = make_search_query_func(**args)
 
+        # random.sample does not create copy - that means we should not change trimmed_dataset inplace
         trimmed_dataset = random.sample(dataset, train_dataset_length)
 
         if synonyms is not None and corrupt_probability != 0:
-            for i, el in enumerate(trimmed_dataset):
-                trimmed_dataset[i]["query"] = corrupt_text(el["query"], synonyms, corrupt_probability)
+            trimmed_dataset = [
+                {"query": corrupt_text(el["query"], synonyms, corrupt_probability), "location": el["location"]}
+                for el in trimmed_dataset]
+            # for i, el in enumerate(trimmed_dataset):
+            #     trimmed_dataset[i]["query"] = corrupt_text(el["query"], synonyms, corrupt_probability)
 
         # we want to maximize top_n, or minimize -top_n
         score = top_n(trimmed_dataset, search_query_func, client, index_name, n,
