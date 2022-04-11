@@ -188,6 +188,7 @@ def evaluate_index(index_name: str,
 
     if corrupt_probability > 0:
         synonyms = get_most_common_synonyms([el["query"] for el in train_dataset], 100)  # todo make 100 as a parameter
+        print(f"size of synonyms: {len(json.dumps(synonyms))}B")  # todo remove after debug
     else:
         synonyms = None
 
