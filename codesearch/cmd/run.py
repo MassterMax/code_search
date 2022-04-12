@@ -138,7 +138,7 @@ def search_doc(index_name: str, path_to_json_request: str, search_query: str) ->
     result = ES.search_doc(index_name, data)
     for doc in result:
         for key in doc:
-            print(f"\033[1;32m {key}: {doc[key]}")
+            print(f"\033[94m {key} \033[0m: {doc[key]}")
         print()
 
 
