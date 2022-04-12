@@ -16,6 +16,8 @@ from codesearch.es.metrics.extract_data import dataset_to_elastic, make_dataset_
 from codesearch.preproc.extract import extract_from_csv
 
 ES = ElasticSearchClient()
+LEXER = PythonLexer()
+FORMATTER = Terminal256Formatter()
 
 
 @click.group()
@@ -141,15 +143,13 @@ def search_doc(index_name: str, path_to_json_request: str, search_query: str, co
                 }
 
     result = ES.search_doc(index_name, data)
-    lexer = PythonLexer()
-    formatter = Terminal256Formatter()
 
     for doc in result:
         for key in doc:
             if colors:
                 key = f"\033[93m {key} \033[0m"
                 if key == "body":
-                    doc[key] = pygments.highlight(doc[key], lexer, formatter)
+                    doc[key] = pygments.highlight(doc[key], LEXER, FORMATTER)
             print(f"{key}: {doc[key]}")
         print()
 
