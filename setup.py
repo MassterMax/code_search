@@ -1,4 +1,17 @@
 from setuptools import setup, find_packages
+from setuptools.command.develop import develop
+
+try:
+    from post_setup import main as post_install
+except ImportError:
+    post_install = lambda: None
+
+class PostDevelopCommand(develop):
+    """Post-installation for development mode."""
+    def run(self):
+        develop.run(self)
+        post_install()
+
 
 setup(
     name='codesearch',
@@ -19,10 +32,14 @@ setup(
         'pyarrow>=6.0.1',
         'python-dotenv>=0.19.2',
         'GitPython>=3.1.26',
+        'nltk>=3.7'
     ],
     entry_points={
         'console_scripts': [
             'cs = codesearch.cmd.run:cs',
         ],
+    },
+    cmdclass={
+        'develop': PostDevelopCommand,
     },
 )
