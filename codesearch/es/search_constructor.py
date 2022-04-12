@@ -27,17 +27,17 @@ class SearchConstructor:
                             "query": query,
                             "fields": [
                                 # exact occurrence
-                                "identifiers^2",
+                                "identifiers^1",
                                 "split_identifiers^2",
                                 "function_body^2",
                                 # meaning
-                                "docstring^4",
-                                "location"
-                                "function_name^2",
+                                "docstring^12",
+                                "location^3"
+                                "function_name^5",
                             ],
                             "type": "most_fields",
                             "fuzziness": "AUTO",
-                            "prefix_length": 2
+                            "prefix_length": 3
                         }
                     },
                     "filter": {
