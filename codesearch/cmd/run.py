@@ -149,7 +149,7 @@ def search_doc(index_name: str, path_to_json_request: str, search_query: str, co
             if colors:
                 value = doc[key]
                 if key == "body":
-                    value = pygments.highlight(doc[key], LEXER, FORMATTER)
+                    value = f"\n {pygments.highlight(doc[key], LEXER, FORMATTER)}"
                 print(f"\033[93m {key} \033[0m: {value}")
             else:
                 print(f"{key}: {doc[key]}")
