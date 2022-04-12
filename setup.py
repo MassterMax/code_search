@@ -1,3 +1,5 @@
+import pathlib
+import pkg_resources
 from setuptools import setup, find_packages
 from setuptools.command.develop import develop
 
@@ -5,6 +7,13 @@ try:
     from post_setup import main as post_install
 except ImportError:
     post_install = lambda: None
+
+with pathlib.Path('requirements.txt').open() as requirements_txt:
+    install_requires = [
+        str(requirement)
+        for requirement
+        in pkg_resources.parse_requirements(requirements_txt)
+    ]
 
 class PostDevelopCommand(develop):
     """Post-installation for development mode."""
@@ -18,22 +27,7 @@ setup(
     version='0.1.0',
     packages=find_packages(include='codesearch'),
     include_package_data=True,
-    install_requires=[
-        'Cython>=0.29.15',
-        'joblib>=0.14.1',
-        'Pygments>=2.5.2',
-        'PyStemmer>=1.3.0',
-        'tqdm>=4.43.0',
-        'tree_sitter>=0.2.1',
-        'Click>=8.0.3',
-        'elasticsearch>=7.16.3, <8.0.0',
-        'pandas>=1.4.0',
-        'cytoolz>=0.10.1',
-        'pyarrow>=6.0.1',
-        'python-dotenv>=0.19.2',
-        'GitPython>=3.1.26',
-        'nltk>=3.7'
-    ],
+    install_requires=install_requires,
     entry_points={
         'console_scripts': [
             'cs = codesearch.cmd.run:cs',
