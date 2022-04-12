@@ -11,7 +11,9 @@ from codesearch.es.metrics.create_noise import get_most_common_synonyms
 from codesearch.es.metrics.evaluation import find_best_params, make_search_query_func, top_n
 from codesearch.es.metrics.extract_data import dataset_to_elastic, make_dataset_for_evaluation
 from codesearch.preproc.extract import extract_from_csv
+import pygments
 
+import math
 ES = ElasticSearchClient()
 
 
@@ -98,7 +100,8 @@ def time(index_name: str, search_request: str):
 @click.argument("index_name")
 @click.option('--path_to_json_request', '-p', type=click.Path(exists=True), default=None)
 @click.option('--search_query', '-q', default=None)
-def search_doc(index_name: str, path_to_json_request: str, search_query: str) -> None:
+@click.option('--colors', '-c', default=False)
+def search_doc(index_name: str, path_to_json_request: str, search_query: str, colors: bool) -> None:
     """
     Args:
         index_name: index where we search
@@ -118,6 +121,7 @@ def search_doc(index_name: str, path_to_json_request: str, search_query: str) ->
           }
         }
         search_query: or exact query instead of path to doc
+        colors: should command color output
 
     Returns: request result
 
@@ -136,9 +140,16 @@ def search_doc(index_name: str, path_to_json_request: str, search_query: str) ->
                 }
 
     result = ES.search_doc(index_name, data)
+    lexer = pygments.lexers.python.PythonLexer()
+    formatter = pygments.formatters.Terminal256Formatter()
+
     for doc in result:
         for key in doc:
-            print(f"\033[94m {key} \033[0m: {doc[key]}")
+            if colors:
+                key = f"\033[93m {key} \033[0m"
+                if key == "body":
+                    doc[key] = pygments.highlight(doc[key], lexer, formatter)
+            print(f"{key}: {doc[key]}")
         print()
 
 
