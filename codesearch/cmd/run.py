@@ -3,6 +3,7 @@ import os
 from pprint import pprint
 
 import click
+import pygments
 from tqdm import tqdm
 
 import codesearch.constants as consts
@@ -11,9 +12,7 @@ from codesearch.es.metrics.create_noise import get_most_common_synonyms
 from codesearch.es.metrics.evaluation import find_best_params, make_search_query_func, top_n
 from codesearch.es.metrics.extract_data import dataset_to_elastic, make_dataset_for_evaluation
 from codesearch.preproc.extract import extract_from_csv
-import pygments
 
-import math
 ES = ElasticSearchClient()
 
 
