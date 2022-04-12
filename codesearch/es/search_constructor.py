@@ -32,7 +32,7 @@ class SearchConstructor:
                                 "function_body^2",
                                 # meaning
                                 "docstring^12",
-                                "location^3"
+                                "location^3",
                                 "function_name^5",
                             ],
                             "type": "most_fields",

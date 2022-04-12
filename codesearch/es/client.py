@@ -1,6 +1,5 @@
 import json
 import os
-from pprint import pprint
 from ssl import create_default_context
 from typing import Dict
 
@@ -73,7 +72,6 @@ class ElasticSearchClient:
         Returns: result from elastic
         """
         search_request = SearchConstructor.make_query(data)
-        pprint(search_request)
         res = self.instance.search(index=index_name, body=search_request)
         # return v1.transform_output(res, search_request)
         return v1.transform_output_light(res)

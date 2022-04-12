@@ -131,7 +131,7 @@ def search_doc(index_name: str, path_to_json_request: str, search_query: str) ->
     else:
         data = {"query": search_query, "from": 0, "size": 5,
                 "filters": {"language": ["Python", "C++"],
-                            "stargazers_count": {"from": 50}
+                            "stargazers_count": {"from": 0}
                             }
                 }
 
