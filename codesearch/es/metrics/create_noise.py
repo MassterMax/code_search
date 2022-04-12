@@ -2,11 +2,7 @@ from collections import Counter
 import re
 from typing import Dict, List
 
-import nltk
 import numpy as np
-
-nltk.download('omw-1.4')
-nltk.download('wordnet')
 from nltk.corpus import wordnet
 
 
