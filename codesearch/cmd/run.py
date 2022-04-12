@@ -135,7 +135,11 @@ def search_doc(index_name: str, path_to_json_request: str, search_query: str) ->
                             }
                 }
 
-    pprint(ES.search_doc(index_name, data))
+    result = ES.search_doc(index_name, data)
+    for doc in result:
+        for key in doc:
+            print(f"{key}: {doc[key]}")
+        print()
 
 
 @cs.command()
