@@ -4,6 +4,8 @@ from pprint import pprint
 
 import click
 import pygments
+from pygments.formatters.terminal256 import Terminal256Formatter
+from pygments.lexers.python import PythonLexer
 from tqdm import tqdm
 
 import codesearch.constants as consts
@@ -139,8 +141,8 @@ def search_doc(index_name: str, path_to_json_request: str, search_query: str, co
                 }
 
     result = ES.search_doc(index_name, data)
-    lexer = pygments.lexers.python.PythonLexer()
-    formatter = pygments.formatters.Terminal256Formatter()
+    lexer = PythonLexer()
+    formatter = Terminal256Formatter()
 
     for doc in result:
         for key in doc:
