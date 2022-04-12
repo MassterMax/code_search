@@ -6,6 +6,7 @@ import click
 import pygments
 from pygments.formatters.terminal256 import Terminal256Formatter
 from pygments.lexers.python import PythonLexer
+from pygments.styles import get_style_by_name
 from tqdm import tqdm
 
 import codesearch.constants as consts
@@ -17,7 +18,7 @@ from codesearch.preproc.extract import extract_from_csv
 
 ES = ElasticSearchClient()
 LEXER = PythonLexer()
-FORMATTER = Terminal256Formatter()
+FORMATTER = Terminal256Formatter(style=get_style_by_name('dracula'))
 
 
 @click.group()
