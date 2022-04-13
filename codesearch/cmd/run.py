@@ -18,7 +18,7 @@ from codesearch.preproc.extract import extract_from_csv
 
 ES = ElasticSearchClient()
 LEXER = PythonLexer()
-FORMATTER = Terminal256Formatter(style=get_style_by_name('dracula'))
+FORMATTER = Terminal256Formatter(style=get_style_by_name("dracula"))
 
 
 @click.group()
@@ -66,7 +66,7 @@ def put(index_name: str, output_directory: str):
     for file in tqdm(os.listdir(directory)):
         filename = os.fsdecode(file)
         if filename.endswith(".json"):
-            with open(f'{output_directory}/{filename}', encoding='utf-8') as json_file:
+            with open(f"{output_directory}/{filename}", encoding="utf-8") as json_file:
                 data = json.load(json_file)
                 print(ES.load_data(index_name, data))
 
@@ -102,9 +102,9 @@ def time(index_name: str, search_request: str):
 
 @cs.command()
 @click.argument("index_name")
-@click.option('--path_to_json_request', '-p', type=click.Path(exists=True), default=None)
-@click.option('--search_query', '-q', default=None)
-@click.option('--colors', '-c', default=False)
+@click.option("--path_to_json_request", "-p", type=click.Path(exists=True), default=None)
+@click.option("--search_query", "-q", default=None)
+@click.option("--colors", "-c", default=False)
 def search_doc(index_name: str, path_to_json_request: str, search_query: str, colors: bool) -> None:
     """
     Args:
@@ -134,7 +134,7 @@ def search_doc(index_name: str, path_to_json_request: str, search_query: str, co
         raise ValueError("You should specify path to request or query!")
 
     if search_query is None:
-        with open(path_to_json_request, 'r') as f:
+        with open(path_to_json_request, "r") as f:
             data = json.load(f)
     else:
         data = {"query": search_query, "from": 0, "size": 5,
@@ -187,11 +187,11 @@ def fill_train_dataset(index_name: str, path_to_dataset_folder: str):
 @click.argument("index_name")
 @click.argument("path_to_dataset_folder", type=click.Path(exists=True))
 @click.argument("path_to_grid", type=click.Path(exists=True))
-@click.option('--train_len', '-l', default=1000)
-@click.option('--n', '-n', default=10)
-@click.option('--query_max_length', '-q', default=30)
-@click.option('--max_evals', '-e', default=30)
-@click.option('--corrupt_probability', '-c', default=0, type=float)
+@click.option("--train_len", "-l", default=1000)
+@click.option("--n", "-n", default=10)
+@click.option("--query_max_length", "-q", default=30)
+@click.option("--max_evals", "-e", default=30)
+@click.option("--corrupt_probability", "-c", default=0, type=float)
 def evaluate_index(index_name: str,
                    path_to_dataset_folder: str,
                    path_to_grid: str,
