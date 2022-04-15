@@ -41,28 +41,3 @@ def corrupt_text(text: str, synonyms: Dict[str, List[str]], probability: float, 
                 pos = np.random.randint(0, len(word))
                 text = text.replace(word, word[:pos] + "#" + word[pos + 1:])
     return text
-
-
-# todo remove after debug
-if __name__ == '__main__':
-    text_list = [
-        """ repo_name: name of GitHub repo like "scikit-learn/scikit-learn"
-        max_user_stars: only max_user_stars starred repo from each user counts
-        n_top_repos: returns this number of most popular repos""",
-
-        """ A method that does following:
-    1. get all GitHub repo stargazers (list)
-    2. for each stargazer get all of his starred repos
-    3. for""",
-
-        """A method that calculates how much time until GitHub api limit breaks
-    Args:
-        github: GitHub instance
-    Returns: estimated time to api reset in seconds
-        """
-    ]
-
-    data = get_most_common_synonyms(text_list, 20)
-    new_text = corrupt_text(text_list[0], data, 0.15)
-    print(text_list[0])
-    print(new_text)

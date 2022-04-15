@@ -1,7 +1,7 @@
 import json
 import os
 from ssl import create_default_context
-from typing import Dict
+from typing import Any, Dict
 
 from dotenv import load_dotenv
 from elasticsearch import Elasticsearch
@@ -12,7 +12,7 @@ from codesearch.es.vs import v1
 
 
 class ElasticSearchClient:
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Access elasticsearch by 9200 port
         """
@@ -26,7 +26,7 @@ class ElasticSearchClient:
             ssl_context=context
         )
 
-    def create(self, index_name: str):
+    def create(self, index_name: str) -> Dict[str, Any]:
         """
         Create index with schema, defined in index_schemas folder
         Args:
@@ -46,7 +46,14 @@ class ElasticSearchClient:
         except IOError as e:
             return {'status': 'error', 'errors': e}
 
-    def load_data(self, index_name: str, data: Dict):
+    def load_data(self, index_name: str, data: Dict) -> Dict[str, Any]:
+        """
+        A method to load data to elastic index
+        Args:
+            index_name: name of index to store data
+            data: Dict of values prepared to be loaded
+        Returns: status of operation
+        """
         try:
             for entity in data:
                 self.instance.index(index=index_name, document=entity)
@@ -62,26 +69,24 @@ class ElasticSearchClient:
         res = self.instance.search(index=index_name, body=search_request)
         return v1.transform_output(res, user_request, mode)
 
-    def search_doc(self, index_name: str, data: Dict):
+    def search_doc(self, index_name: str, data: Dict) -> Dict[str, Any]:
         """
         Search data in index with request like in example_request
         Args:
             index_name: index to search
             data: provided request
 
-        Returns: result from elastic
+        Returns: result from elastic fitted with transform_output_light
         """
         search_request = SearchConstructor.make_query(data)
         res = self.instance.search(index=index_name, body=search_request)
-        # return v1.transform_output(res, search_request)
         return v1.transform_output_light(res)
 
-    def delete(self, index_name: str):
+    def delete(self, index_name: str) -> Dict[str, Any]:
         """
         Delete elastic index
         Args:
             index_name: name of index
-
         Returns: Dictionary-like result
         """
         try:

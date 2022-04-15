@@ -25,7 +25,7 @@ LANGUAGES: Dict[str, Type[LanguageRules]] = {
 parser = TokenParser()
 
 
-def extract_from_csv(csv_path: str, storage_path: str, output_directory: str, one_file_size: int = 1024):
+def extract_from_csv(csv_path: str, storage_path: str, output_directory: str, one_file_size: int = 1024) -> None:
     """
     A function to extract data from git repo with provided csv
     Args:

@@ -1,9 +1,9 @@
-from typing import Dict, List
+from typing import Any, Dict, List
 
 
 class SearchConstructor:
     @classmethod
-    def make_query(cls, data: Dict):
+    def make_query(cls, data: Dict) -> Dict[str, Any]:
         """
         Make elastic query from given request
         Args:
@@ -52,7 +52,7 @@ class SearchConstructor:
         }
 
     @classmethod
-    def add_filters(cls, filters: List, data: Dict):
+    def add_filters(cls, filters: List, data: Dict) -> None:
         """
         Add filters to query body
         Args:
