@@ -22,7 +22,7 @@ FORMATTER = Terminal256Formatter(style=get_style_by_name("dracula"))
 
 
 @click.group()
-def cs():
+def cs() -> None:
     """
     A command of type group. All others are attached to it.
     """
@@ -31,7 +31,7 @@ def cs():
 
 @cs.command()
 @click.argument("index_name")
-def init(index_name: str):
+def init(index_name: str) -> None:
     """
     Initialize elastic index with given name
     Args:
@@ -42,7 +42,7 @@ def init(index_name: str):
 
 @cs.command()
 @click.argument("index_name")
-def delete(index_name: str):
+def delete(index_name: str) -> None:
     """
     Delete elastic index with given name
     Args:
@@ -54,7 +54,7 @@ def delete(index_name: str):
 @cs.command()
 @click.argument("index_name")
 @click.argument("output_directory", type=click.Path(exists=True))
-def put(index_name: str, output_directory: str):
+def put(index_name: str, output_directory: str) -> None:
     """
     Put to elastic index entities from directory with jsons
     Args:
@@ -74,30 +74,16 @@ def put(index_name: str, output_directory: str):
 @cs.command()
 @click.argument("index_name")
 @click.argument("search_request")
-def search(index_name: str, search_request: str):
+@click.option("--search_mode", "-m", default=0,
+              type=click.Choice([consts.REALISE_SEARCH_MODE, consts.EXPLAIN_SEARCH_MODE, consts.TIMINGS_SEARCH_MODE]))
+def search(index_name: str, search_request: str, search_mode: int = 0) -> None:
     """
     Args:
         search_request: request as a string
         index_name: index in which documents are searched
+        search_mode: mode of search (0 - just search, 1 - with timings, 2 - explain elastic score)
     """
-    pprint(ES.search(index_name, search_request, consts.REALISE_SEARCH_MODE))
-
-
-@cs.command()
-@click.argument("index_name")
-@click.argument("search_request")
-def explain(index_name: str, search_request: str):
-    """
-    Same as search but save explain in es/explain_plans
-    """
-    pprint(ES.search(index_name, search_request, consts.EXPLAIN_SEARCH_MODE))
-
-
-@cs.command()
-@click.argument("index_name")
-@click.argument("search_request")
-def time(index_name: str, search_request: str):
-    pprint(ES.search(index_name, search_request, consts.TIMINGS_SEARCH_MODE))
+    pprint(ES.search(index_name, search_request, search_mode))
 
 
 @cs.command()
@@ -162,9 +148,9 @@ def search_doc(index_name: str, path_to_json_request: str, search_query: str, co
 @click.argument("storage_path", type=click.Path(exists=True))
 @click.argument("output_path", type=click.Path(exists=True))
 @click.argument("file_size_mb", default=1024)
-def extract(csv_path: str, storage_path: str, output_path: str, file_size_mb: int):
+def extract(csv_path: str, storage_path: str, output_path: str, file_size_mb: int) -> None:
     """
-    Extract data from scv file
+    Extract data from csv file
     Args:
         csv_path: path to csv file with repos
         storage_path: path where to store repos
@@ -177,7 +163,13 @@ def extract(csv_path: str, storage_path: str, output_path: str, file_size_mb: in
 @cs.command()
 @click.argument("index_name")
 @click.argument("path_to_dataset_folder")
-def fill_train_dataset(index_name: str, path_to_dataset_folder: str):
+def fill_train_dataset(index_name: str, path_to_dataset_folder: str) -> None:
+    """
+    This method fills index with entities from CodeSearchNet
+    Args:
+        index_name: name of index to fill
+        path_to_dataset_folder: path to CodeSearchNet dataset
+    """
     data = dataset_to_elastic(path_to_dataset_folder)
     for entity in tqdm(data):
         ES.instance.index(index=index_name, document=entity)
@@ -201,7 +193,23 @@ def evaluate_index(index_name: str,
                    query_max_length: int = 30,
                    max_evals: int = 50,
                    corrupt_probability: float = 0,
-                   corrupt_test: bool = False):
+                   corrupt_test: bool = False) -> None:
+    """
+    This method takes CodeSearchNet dataset and make a smaller dataset to evaluate Elasticsearch given index and
+    search query defined in codesearch.es.metrics.evaluation.make_search_query_func via top_n metric
+    (actually you can use this method for two things: 1) evaluate index 2) calculate best parameters
+    Args:
+        index_name: name of index where CodeSearchNet dataset already stored
+        path_to_dataset_folder: path to CodeSearchNet dataset
+        path_to_grid: path to grid of optimized params
+        train_len: length of train index
+        n: n in top_n metric
+        query_max_length: docstring trimmed to the query of this length
+        max_evals: maximum count of evaluations (set to 1 if your grid has only one combination of values)
+        corrupt_probability:
+        corrupt_test: should we also corrupt
+    Returns: this method will print optimal grid of params and top_n metric
+    """
     train_dataset, test_dataset = make_dataset_for_evaluation(path_to_dataset_folder)
 
     with open(path_to_grid, "r") as f:
