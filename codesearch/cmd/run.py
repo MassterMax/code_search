@@ -11,7 +11,7 @@ from tqdm import tqdm
 
 import codesearch.constants as consts
 from codesearch.es.client import ElasticSearchClient
-from codesearch.es.metrics.create_noise import get_most_common_synonyms
+from codesearch.es.metrics.create_noise import corrupt_text, get_most_common_synonyms
 from codesearch.es.metrics.evaluation import find_best_params, make_search_query_func, top_n
 from codesearch.es.metrics.extract_data import dataset_to_elastic, make_dataset_for_evaluation
 from codesearch.preproc.extract import extract_from_csv
@@ -191,7 +191,8 @@ def fill_train_dataset(index_name: str, path_to_dataset_folder: str):
 @click.option("--n", "-n", default=10)
 @click.option("--query_max_length", "-q", default=30)
 @click.option("--max_evals", "-e", default=30)
-@click.option("--corrupt_probability", "-c", default=0, type=float)
+@click.option("--corrupt_probability", "-p", default=0, type=float)
+@click.option("--corrupt_test", "-t", default=False, type=bool)
 def evaluate_index(index_name: str,
                    path_to_dataset_folder: str,
                    path_to_grid: str,
@@ -199,7 +200,8 @@ def evaluate_index(index_name: str,
                    n: int = 10,
                    query_max_length: int = 30,
                    max_evals: int = 50,
-                   corrupt_probability: float = 0):
+                   corrupt_probability: float = 0,
+                   corrupt_test: bool = False):
     train_dataset, test_dataset = make_dataset_for_evaluation(path_to_dataset_folder)
 
     with open(path_to_grid, "r") as f:
@@ -219,6 +221,8 @@ def evaluate_index(index_name: str,
     params["size"] = n
 
     for i, el in enumerate(test_dataset):
+        if synonyms is not None and corrupt_probability != 0 and corrupt_test:
+            test_dataset[i]["query"] = corrupt_text(test_dataset[i]["query"], synonyms, corrupt_probability)
         test_dataset[i]["query"] = test_dataset[i]["query"][:query_max_length]
 
     score = top_n(test_dataset, make_search_query_func(**params), ES, index_name, n)
