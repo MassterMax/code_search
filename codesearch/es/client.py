@@ -1,7 +1,7 @@
 import json
 import os
 from ssl import create_default_context
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from dotenv import load_dotenv
 from elasticsearch import Elasticsearch
@@ -69,7 +69,7 @@ class ElasticSearchClient:
         res = self.instance.search(index=index_name, body=search_request)
         return v1.transform_output(res, user_request, mode)
 
-    def search_doc(self, index_name: str, data: Dict) -> Dict[str, Any]:
+    def search_doc(self, index_name: str, data: Dict) -> List[Dict[str, Any]]:
         """
         Search data in index with request like in example_request
         Args:
