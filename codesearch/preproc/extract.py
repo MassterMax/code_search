@@ -7,6 +7,7 @@ from typing import Dict, Iterator, List, Tuple, Type
 from cytoolz import groupby
 from git import GitCommandError, Repo
 import pandas as pd
+from preprocess.extractors.parsers import parser_collection
 from preprocess.extractors.tree_sitter import TreeEntity
 from preprocess.mappers.files import extract_function_trees
 from preprocess.mappers.utils import TokenParser
@@ -22,6 +23,7 @@ LANGUAGES: Dict[str, Type[LanguageRules]] = {
     CppRules.name: CppRules
 }
 
+parser_collection.build_or_update_library()
 parser = TokenParser()
 
 
